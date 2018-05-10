@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<CATALOG>
+
+  <color_group id="clr001">
+    <master>#A80B03</master>
+    <secondary>#FFE41F</secondary>  
+    <intersperse>#FAFAFA</intersperse>  
+  </color_group>
+
+  <color_group id="clr002">
+    <master>#fffbcc</master>
+    <secondary>#CF1B1B</secondary>  
+    <intersperse>#900D0D</intersperse>  
+  </color_group>
+
+  <color_group id="clr003">
+    <master>#CF0A2C</master>  
+    <secondary>#FFCE00</secondary>  
+    <intersperse>#FCFFD7</intersperse>  
+  </color_group>
+
+  <color_group id="clr004">
+    <master>#D9343C</master>  
+    <secondary>#FDFBFC</secondary>  
+    <intersperse>#FFB521</intersperse>  
+  </color_group>
+
+  <color_group id="clr005">
+    <master>#F2F2F2</master>  
+    <secondary>#D2000A</secondary>  
+    <intersperse>#7D0000</intersperse>  
+  </color_group>
+
+  <color_group id="clr006">
+    <master>#181C28</master>
+    <secondary>#FFFFFF</secondary>
+    <intersperse>#FAFAFA</intersperse>
+  </color_group>
+
+    <color_group id="clr007">
+    <master>#191919</master>
+    <secondary>#00CCBB</secondary>
+    <intersperse>#585858</intersperse>
+  </color_group>
+
+    <color_group id="clr008">
+    <master>#181818</master>
+    <secondary>#F6D814</secondary>
+    <intersperse>#FCFCFC</intersperse>
+  </color_group>
+
+    <color_group id="clr009">
+    <master>#321E50</master>
+    <secondary>#FAF0F0</secondary>
+    <intersperse>#F0A064</intersperse>
+  </color_group>
+
+    <color_group id="clr010">
+    <master>#000541</master>
+    <secondary>#0ABEBE</secondary>
+    <intersperse>#FAF0F0</intersperse>
+  </color_group>
+
+      <color_group id="clr011">
+    <master>#ffffff</master>
+    <secondary>#333333</secondary>
+    <intersperse>#333333</intersperse>
+  </color_group>
+
+
+</CATALOG>

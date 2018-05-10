@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<CATALOG>
+    <style name='红色喜庆' id='s01'>
+        <name>红色喜庆</name>
+        <!-- 对应约束空间模板IDs -->
+        <layout_IDs>t00001|t00002|t00003</layout_IDs>
+        <!-- 风格对应的颜色组合 -->
+        <color_group_IDs>clr001|clr002|clr003|clr004|clr005</color_group_IDs>
+        <!-- 可选择的字体集 -->
+        <font_family>wygdmc.otf|pf-zct.ttf|STZHONGS.TTF|ywsfxsjt.ttf</font_family>
+    </style>
+
+    <style name='商业周刊' id='s02'>
+        <name>商业周刊</name>
+        <layout_IDs>a00002|a00003|a00004|a00005</layout_IDs>
+        <color_group_IDs>clr011</color_group_IDs>
+        <font_family>pf-zct.ttf</font_family>
+    </style>
+
+    <style name='炫酷科技' id='s03'>
+        <name>炫酷科技</name>
+        <layout_IDs>t00001|t00002|t00003</layout_IDs>
+        <color_group_IDs>clr006|clr007|clr008|clr009|clr010</color_group_IDs>
+        <font_family>hyllhj.ttf|hylxtj.ttf|mmjlx.TTF</font_family>
+    </style>
+
+</CATALOG>

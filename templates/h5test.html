@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+	<canvas id="canvas" height="500" width="500" style="border:2px solid red;"></canvas>
+	<canvas id="d1" height="500" width="500" style="border:1px solid red;"></canvas>
+	<canvas id="d2" height="500" width="500" style="border:1px solid red;"></canvas>
+	<canvas id="d3" height="500" width="500" style="border:1px solid red;"></canvas>
+	<img src="../background/happy1.jpg" alt="" id="imgz"/>
+	</body>
+
+	<script>
+		var canvas=document.getElementById("canvas");
+		var context=canvas.getContext("2d");
+		context.fillStyle="#aaa";
+		context.globalAlpha="0.3"
+		context.strokeStyle="#00FF00";
+		context.fillRect(0,0,100,100);
+		context.strokeRect(200,0,100,100);
+
+		<!-- 线性渐变 -->
+		context.globalAlpha="1"
+		var grad1 = context.createLinearGradient(100,100,canvas.width,100);
+		grad1.addColorStop(0,"pink");
+		grad1.addColorStop(0.5,"yellow");
+		grad1.addColorStop(1,"red");
+		context.fillStyle=grad1;
+		context.fillRect(0,100,canvas.width,100);
+
+		<!-- 绘制圆形 -->
+		context.arc(100,200,100,0,Math.PI*2,true);
+		context.stroke();
+
+
+		<!-- 绘制文字 -->
+
+		<!-- Canvas处理图像    三种方式-->
+		<!-- 方式一 -->
+		var canvas1=document.getElementById("d1");
+		var context1=canvas1.getContext("2d");
+		var img1=document.getElementById("imgz");
+		img1.onload=function(){
+			context1.drawImage(img1,0,0,300,300);
+		}
+
+
+		<!-- 方式二 -->
+		var canvas2=document.getElementById("d2");
+		var context2 = canvas2.getContext("2d");
+		var img2=new Image();
+		img2.src="../background/happy2.jpg";
+		img2.onload=function(){
+			context2.drawImage(img2,0,0,300,300);
+		}
+		<!--&lt;!&ndash; 画布切割 &ndash;&gt;-->
+		<!--context2.beginPath();-->
+		<!--context2.arc(150,150,100,0,Math.PI*2,true);-->
+		<!--context2.clip();-->
+
+		<!--context2.save();-->
+		context2.beginPath();
+		context2.scale(0.5,0.5);        <!-- 缩放 -->
+		context2.rotate(Math.PI/18);
+		context2.translate(100,200);
+		<!--context2.restore();-->
+
+		<!-- 方式三:把本身的大小进行平铺 -->
+		var canvas3=document.getElementById("d3");
+		var context3 = canvas3.getContext("2d");
+		var img3=new Image();
+		img3.src="../background/happy2.jpg";
+		img3.onload=function(){
+			context3.drawImage(img2,0,0,100,100);
+			var peat = context3.createPattern(img3,"repeat");
+			context3.fillStyle=peat;
+			context3.fillRect(0,0,300,300);
+		}
+
+
+	</script>
+</html>

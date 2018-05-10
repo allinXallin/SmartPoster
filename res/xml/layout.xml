@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<CATALOG>
+	<layout id="t00001">
+		<background></background>
+		<foreground></foreground>
+		<title space="h001">
+			<!--约束框左上角的坐标（相对值）-->
+			<point_lefttop>3|14.2</point_lefttop>
+			<!--约束框右下角的坐标（相对值）-->
+			<point_rightbottom>97|30.6</point_rightbottom>
+			<font_size_min>20</font_size_min>
+			<font_size_max>160</font_size_max>
+			<!--内容对齐方式-->
+			<align>center</align>
+			<!-- 内容占空间的百分比 -->
+			<precent>80</precent>
+		</title>
+		<sub_title space="s001">
+			<point_lefttop>3|30.9</point_lefttop>
+			<point_rightbottom>97|35.3</point_rightbottom>
+			<font_size_min>20</font_size_min>
+			<font_size_max>90</font_size_max>
+			<align>center</align>
+			<precent>80</precent>
+		</sub_title>
+		<content space="c001">
+			<point_lefttop>3|84.1</point_lefttop>
+			<point_rightbottom>97|94.5</point_rightbottom>
+			<font_size_min>10</font_size_min>
+			<font_size_max>60</font_size_max>
+			<align>left</align>
+			<precent>80</precent>
+		</content>
+		<logo space="l001">
+			<point_lefttop>10.7|5.8</point_lefttop>
+			<point_rightbottom>89.3|13.9</point_rightbottom>
+			<align>left</align>
+			<precent>80</precent>
+		</logo>
+		<photo space="p002">
+			<point_lefttop>10.7|35.6</point_lefttop>
+			<point_righttop>89.3|35.6</point_righttop>
+			<point_leftbottom>10.7|83.8</point_leftbottom>
+			<point_rightbottom>89.3|83.8</point_rightbottom>
+			<align>center</align>
+			<precent>80</precent>
+			<geometry name="Quadrilateral">4</geometry>
+		</photo>
+	</layout>
+
+	<layout id="t00002">
+		<foreground></foreground>
+		<background></background>
+		<title space="h001">
+			<point_lefttop>6.7|14.2</point_lefttop>
+			<point_rightbottom>93.3|29.1</point_rightbottom>
+			<font_size_min>20</font_size_min>
+			<font_size_max>200</font_size_max>
+			<align>left</align>
+			<precent>80</precent>
+		</title>
+		<sub_title space="s001">
+			<point_lefttop>6.7|29.4</point_lefttop>
+			<point_rightbottom>93.3|33.8</point_rightbottom>
+			<font_size_min>20</font_size_min>
+			<font_size_max>90</font_size_max>
+			<align>left</align>
+			<precent>80</precent>
+		</sub_title>
+		<content space="c001">
+			<point_lefttop>6.7|87.5</point_lefttop>
+			<point_rightbottom>93.3|94.5</point_rightbottom>
+			<font_size_min>10</font_size_min>
+			<font_size_max>60</font_size_max>
+			<align>left</align>
+			<precent>80</precent>
+		</content>
+		<logo space="l001">
+			<point_lefttop>6.7|5.8</point_lefttop>
+			<point_rightbottom>93.3|13.9</point_rightbottom>
+			<align>left</align>
+			<precent>80</precent>
+		</logo>
+		<photo space="p002">
+			<point_lefttop>0|41</point_lefttop>
+			<point_righttop>100|32</point_righttop>
+			<point_leftbottom>0|86</point_leftbottom>
+			<point_rightbottom>100|77</point_rightbottom>
+			<align>center</align>
+			<precent>100</precent>
+			<geometry name="Quadrilateral">4</geometry>
+		</photo>
+	</layout>
+
+	<layout id="t00003">
+		<foreground></foreground>
+		<background></background>
+		<title space="h001">
+			<point_lefttop>4.8|63.1</point_lefttop>
+			<point_rightbottom>95.2|77.9</point_rightbottom>
+			<font_size_min>20</font_size_min>
+			<font_size_max>160</font_size_max>
+			<align>right</align>
+			<precent>80</precent>
+		</title>
+		<sub_title space="s001">
+			<point_lefttop>4.8|78.6</point_lefttop>
+			<point_rightbottom>95.2|84.6</point_rightbottom>
+			<font_size_min>20</font_size_min>
+			<font_size_max>60</font_size_max>
+			<align>right</align>
+			<precent>80</precent>
+		</sub_title>
+		<content space="c001">
+			<point_lefttop>4.8|85.3</point_lefttop>
+			<point_rightbottom>95.2|95.7</point_rightbottom>
+			<font_size_min>10</font_size_min>
+			<font_size_max>30</font_size_max>
+			<align>right</align>
+			<precent>80</precent>
+		</content>
+		<logo space="l001">
+			<point_lefttop>4.8|5.8</point_lefttop>
+			<point_rightbottom>95.2|14</point_rightbottom>
+			<align>left</align>
+			<precent>80</precent>
+		</logo>
+		<photo space="p002">
+			<point_lefttop>4.8|15.4</point_lefttop>
+			<point_righttop>95.2|15.4</point_righttop>
+			<point_leftbottom>4.9|61.6</point_leftbottom>
+			<point_rightbottom>95.2|61.6</point_rightbottom>
+			<align>left</align>
+			<precent>80</precent>
+			<geometry name="Quadrilateral">4</geometry>
+		</photo>
+	</layout>
+
+	<layout id="t00004">
+		<foreground></foreground>
+		<background></background>
+		<title space="h001">
+			<point_lefttop>66.2|14.8</point_lefttop>
+			<point_rightbottom>81.9|74.2</point_rightbottom>
+			<font_size_min>20</font_size_min>
+			<font_size_max>120</font_size_max>
+			<align>center</align>
+			<precent>80</precent>
+		</title>
+		<sub_title space="s001">
+			<point_lefttop>82.1|28.9</point_lefttop>
+			<point_rightbottom>89.4|80.9</point_rightbottom>
+			<font_size_min>20</font_size_min>
+			<font_size_max>50</font_size_max>
+			<align>center</align>
+			<precent>80</precent>
+		</sub_title>
+		<content space="c001">
+			<point_lefttop>89.6|28.9</point_lefttop>
+			<point_rightbottom>96.9|80.9</point_rightbottom>
+			<font_size_min>6</font_size_min>
+			<font_size_max>20</font_size_max>
+			<align>left</align>
+			<precent>80</precent>
+		</content>
+		<logo space="l001">
+			<point_lefttop>4.8|3.7</point_lefttop>
+			<point_rightbottom>95.2|11.9</point_rightbottom>
+			<align>left</align>
+			<precent>60</precent>
+		</logo>
+		<photo space="p002">
+			<point_lefttop>4.8|35.5</point_lefttop>
+			<point_righttop>65.9|35.5</point_righttop>
+			<point_leftbottom>4.8|96.3</point_leftbottom>
+			<point_rightbottom>65.9|96.3</point_rightbottom>
+			<align>center</align>
+			<precent>90</precent>
+			<geometry name="Quadrilateral">4</geometry>
+		</photo>
+	</layout>
+
+
+	<layout id="a00001">
+		<background></background>
+		<foreground>海报超人_活动_中国商业周刊_0427.png</foreground>
+		<title space="h001">
+			<point_lefttop>10|48</point_lefttop>
+			<point_rightbottom>25|50.5</point_rightbottom>
+			<font_size_min>10</font_size_min>
+			<font_size_max>30</font_size_max>
+			<align>left|bottom</align>
+			<precent>90</precent>
+
+		</title>
+		<sub_title space="s001">
+			<point_lefttop>25|48</point_lefttop>
+			<point_rightbottom>45|50.5</point_rightbottom>
+			<font_size_min>10</font_size_min>
+			<font_size_max>40</font_size_max>
+			<align>left|bottom</align>
+			<precent>90</precent>
+			<font name="德彪钢笔行书字库">dbgbxszk.ttf</font>
+		</sub_title>
+		<!-- 有的模板暂时不含content信息 -->
+		<content space="c001">
+			<point_lefttop>0|0</point_lefttop>
+			<point_rightbottom>0|0</point_rightbottom>
+			<font_size_min>0</font_size_min>
+			<font_size_max>0</font_size_max>
+			<align>left</align>
+			<precent>0</precent>
+		</content>
+		<logo space="l001">
+			<point_lefttop>10|26</point_lefttop>
+			<point_rightbottom>45|29</point_rightbottom>
+			<align>left</align>
+			<precent>80</precent>
+		</logo>
+		<photo space="p002">
+			<point_lefttop>6|22</point_lefttop>
+			<point_righttop>94|22</point_righttop>
+			<point_leftbottom>6|92</point_leftbottom>
+			<point_rightbottom>94|92</point_rightbottom>
+			<align>center</align>
+			<precent>99.5</precent>
+			<geometry name="Quadrilateral">4</geometry>
+		</photo>
+	</layout>
+
+
+
+	<layout id="a00002">
+		<background></background>
+		<foreground>a00002_领先.png|a00002_强者.png</foreground>
+		<title space="h001">
+			<point_lefttop>11|55</point_lefttop>
+			<point_rightbottom>41|58</point_rightbottom>
+			<font_size_min>14</font_size_min>
+			<font_size_max>23</font_size_max>
+			<align>left</align>
+			<precent>100</precent>
+		</title>
+		<sub_title space="s001">
+			<point_lefttop>26|56</point_lefttop>
+			<point_rightbottom>46|63</point_rightbottom>
+			<font_size_min>20</font_size_min>
+			<font_size_max>40</font_size_max>
+			<align>left</align>
+			<precent>100</precent>
+			<font_family name="德彪钢笔行书字库">dbgbxszk.ttf</font_family>
+		</sub_title>
+		<!-- 有的模板暂时不含content信息 -->
+		<content space="c001">
+			<point_lefttop>0|0</point_lefttop>
+			<point_rightbottom>0|0</point_rightbottom>
+			<font_size_min>0</font_size_min>
+			<font_size_max>0</font_size_max>
+			<align>left</align>
+			<precent>0</precent>
+		</content>
+		<logo space="l001">
+			<point_lefttop>11|25</point_lefttop>
+			<point_rightbottom>41|29</point_rightbottom>
+			<align>left</align>
+			<precent>90</precent>
+		</logo>
+		<photo space="p002">
+			<point_lefttop>6|20</point_lefttop>
+			<point_righttop>94|20</point_righttop>
+			<point_leftbottom>6|93.5</point_leftbottom>
+			<point_rightbottom>94|93.5</point_rightbottom>
+			<align>center</align>
+			<precent>99.5</precent>
+			<geometry name="Quadrilateral">4</geometry>
+			<!-- 若有前景图的限制，并且上传的photo有人脸，则将人脸放置在ROI -->
+			<face_lefttop>42|42</face_lefttop>
+			<face_rightbottom>82|72</face_rightbottom>
+		</photo>
+	</layout>
+
+
+	<layout id="a00003">
+		<background></background>
+		<foreground>a00003_领先.png|a00003_强者.png</foreground>
+		<title space="h001">
+			<point_lefttop>11|55</point_lefttop>
+			<point_rightbottom>41|58</point_rightbottom>
+			<font_size_min>14</font_size_min>
+			<font_size_max>23</font_size_max>
+			<align>left</align>
+			<precent>100</precent>
+			<color>#FFFFFF</color>
+		</title>
+		<sub_title space="s001">
+			<point_lefttop>26|56</point_lefttop>
+			<point_rightbottom>46|63</point_rightbottom>
+			<font_size_min>20</font_size_min>
+			<font_size_max>40</font_size_max>
+			<align>left</align>
+			<precent>100</precent>
+			<!-- 一个很奇怪的问题，要是把color和font_family顺序交换，那么这个模板的font_family就获取不到 -->
+			<color>#FFFFFF</color>
+			<font_family name="德彪钢笔行书字库">dbgbxszk.ttf</font_family>
+		</sub_title>
+		<content space="c001">
+			<point_lefttop>0|0</point_lefttop>
+			<point_rightbottom>0|0</point_rightbottom>
+			<font_size_min>0</font_size_min>
+			<font_size_max>0</font_size_max>
+			<align>left</align>
+			<precent>0</precent>
+		</content>
+		<logo space="l001">
+			<point_lefttop>11|25</point_lefttop>
+			<point_rightbottom>41|29</point_rightbottom>
+			<align>left</align>
+			<precent>90</precent>
+		</logo>
+		<photo space="p002">
+			<point_lefttop>6|20</point_lefttop>
+			<point_righttop>94|20</point_righttop>
+			<point_leftbottom>6|93.5</point_leftbottom>
+			<point_rightbottom>94|93.5</point_rightbottom>
+			<align>center</align>
+			<precent>99.5</precent>
+			<geometry name="Quadrilateral">4</geometry>
+			<!-- 若有前景图的限制，并且上传的photo有人脸，则将人脸放置在ROI -->
+			<face_lefttop>42|42</face_lefttop>
+			<face_rightbottom>82|72</face_rightbottom>
+		</photo>
+	</layout>
+
+
+
+		<layout id="a00004">
+		<background></background>
+		<foreground>a00002_未来.png|a00002_智者.png</foreground>
+		<title space="h001">
+			<point_lefttop>11|55</point_lefttop>
+			<point_rightbottom>41|58</point_rightbottom>
+			<font_size_min>14</font_size_min>
+			<font_size_max>23</font_size_max>
+			<align>left</align>
+			<precent>100</precent>
+		</title>
+		<sub_title space="s001">
+			<point_lefttop>26|56</point_lefttop>
+			<point_rightbottom>46|63</point_rightbottom>
+			<font_size_min>20</font_size_min>
+			<font_size_max>40</font_size_max>
+			<align>left</align>
+			<precent>100</precent>
+			<font_family name="德彪钢笔行书字库">dbgbxszk.ttf</font_family>
+		</sub_title>
+		<!-- 有的模板暂时不含content信息 -->
+		<content space="c001">
+			<point_lefttop>0|0</point_lefttop>
+			<point_rightbottom>0|0</point_rightbottom>
+			<font_size_min>0</font_size_min>
+			<font_size_max>0</font_size_max>
+			<align>left</align>
+			<precent>0</precent>
+		</content>
+		<logo space="l001">
+			<point_lefttop>11|25</point_lefttop>
+			<point_rightbottom>41|29</point_rightbottom>
+			<align>left</align>
+			<precent>90</precent>
+		</logo>
+		<photo space="p002">
+			<point_lefttop>6|20</point_lefttop>
+			<point_righttop>94|20</point_righttop>
+			<point_leftbottom>6|93.5</point_leftbottom>
+			<point_rightbottom>94|93.5</point_rightbottom>
+			<align>center</align>
+			<precent>99.5</precent>
+			<geometry name="Quadrilateral">4</geometry>
+			<!-- 若有前景图的限制，并且上传的photo有人脸，则将人脸放置在ROI -->
+			<face_lefttop>42|42</face_lefttop>
+			<face_rightbottom>82|72</face_rightbottom>
+		</photo>
+	</layout>
+
+
+
+	<layout id="a00005">
+		<background></background>
+		<foreground>a00003_未来.png|a00003_智者.png</foreground>
+		<title space="h001">
+			<point_lefttop>11|55</point_lefttop>
+			<point_rightbottom>41|58</point_rightbottom>
+			<font_size_min>14</font_size_min>
+			<font_size_max>23</font_size_max>
+			<align>left</align>
+			<precent>100</precent>
+			<color>#FFFFFF</color>
+		</title>
+		<sub_title space="s001">
+			<point_lefttop>26|56</point_lefttop>
+			<point_rightbottom>46|63</point_rightbottom>
+			<font_size_min>20</font_size_min>
+			<font_size_max>40</font_size_max>
+			<align>left</align>
+			<precent>100</precent>
+			<!-- 一个很奇怪的问题，要是把color和font_family顺序交换，那么这个模板的font_family就获取不到 -->
+			<color>#FFFFFF</color>
+			<font_family name="德彪钢笔行书字库">dbgbxszk.ttf</font_family>
+		</sub_title>
+		<content space="c001">
+			<point_lefttop>0|0</point_lefttop>
+			<point_rightbottom>0|0</point_rightbottom>
+			<font_size_min>0</font_size_min>
+			<font_size_max>0</font_size_max>
+			<align>left</align>
+			<precent>0</precent>
+		</content>
+		<logo space="l001">
+			<point_lefttop>11|25</point_lefttop>
+			<point_rightbottom>41|29</point_rightbottom>
+			<align>left</align>
+			<precent>90</precent>
+		</logo>
+		<photo space="p002">
+			<point_lefttop>6|20</point_lefttop>
+			<point_righttop>94|20</point_righttop>
+			<point_leftbottom>6|93.5</point_leftbottom>
+			<point_rightbottom>94|93.5</point_rightbottom>
+			<align>center</align>
+			<precent>99.5</precent>
+			<geometry name="Quadrilateral">4</geometry>
+			<!-- 若有前景图的限制，并且上传的photo有人脸，则将人脸放置在ROI -->
+			<face_lefttop>42|42</face_lefttop>
+			<face_rightbottom>82|72</face_rightbottom>
+		</photo>
+	</layout>
+
+
+</CATALOG>
