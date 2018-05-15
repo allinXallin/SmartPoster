@@ -577,6 +577,8 @@ def draw_a_poster(userInfoDict, style_layout, style_color, font, path):
     # HEIGHT = 2696
     WIDTH = 828
     HEIGHT = 1348
+    # WIDTH = 375
+    # HEIGHT = 1480
     # 在海报json里面添加宽高信息
     psd_layers['width'] = WIDTH
     psd_layers['height'] = HEIGHT
@@ -613,7 +615,9 @@ def draw_a_poster(userInfoDict, style_layout, style_color, font, path):
         fgs = style_layout.foreground.strip().split('|')
         index = random.randint(0,len(fgs)-1)
         foreground = Image.open('res/foreground/' + fgs[index])
-        # 绘制前景图到img上    注意：此时前景色跟图片的分辨率一样，可直接paste，后期可能不一样
+        # 绘制前景图到img上    注意：此时前景色跟图片的分辨率一样，可直接paste，后期可能不一样;
+        #                          但可通过resize()函数进行处理
+        foreground = foreground.resize((WIDTH,HEIGHT))
         img.paste(foreground,(0,0,WIDTH,HEIGHT),mask=foreground)
         # 将前景图保存到对应目录下
         foreground.save(poster_path + '/fg.png')
@@ -642,7 +646,7 @@ def draw_a_poster(userInfoDict, style_layout, style_color, font, path):
 
     # 绘制Title，不可换行；同时生成单独的图层返回     注：标题内容不能为空，且在前端已经限制校验
     title_png, psd_layers = draw_title(img, psd_layers, userInfoDict["title"], style_layout.title,
-                                      style_color.secondary, "webFonts/" + font, False, poster_path)
+                                      style_color.secondary, "font/webFonts/" + font, False, poster_path)
     title_png.save(poster_path + '/title.png')
     psd_layers['layers'][-1]['image'] = poster_path + '/title.png'
 
@@ -1392,13 +1396,13 @@ def face_detect(photo):
     #       ① scaleFacter：人脸检测过程中每次迭代时压缩率；
     #       ② minNeighbors：每个人脸矩形保留近邻数目的最小值
     # 检测结果：返回人脸矩形数组
-    faces = face_cascade.detectMultiScale(gray,1.9,5)
+    faces = face_cascade.detectMultiScale(gray,1.3,5)
 
     # # 其实这个for循环暂时没用，因为现阶段上传的单人脸
     # for (x,y,w,h) in faces:
     #     img = cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
     # cv2.namedWindow('adf',cv2.WINDOW_NORMAL)
-    # cv2.imshow('adf',img)
+    # cv2.imshow('adf',img)d
     # cv2.waitKey(0)
 
     # opencv转换成PIL.Image格式
@@ -1412,71 +1416,73 @@ def face_detect(photo):
 
 
 
+app = Flask(__name__)
+CORS(app, resources=r'/*')  # r'/*'是通配符，让本服务器所有的URL都允许跨域请求
+
+# @app.route('/hello', methods=['GET', 'POST'])  # app.route装饰器映射URL和执行的函数，这个设置将根URL映射到了hello_world函数上
+# def smart_poster():
+#     if request.method == 'POST':
+#         send_result()
+#         return '海报制作中!'
+
+@app.route('/smartposter',methods=['GET','POST'])  # app.route装饰器映射URL和执行的函数，这个设置将根URL映射到了hello_world函数上
+def smart_poster():
+    if request.method == 'POST':
+        # 计算海报制作时间，在 Unix 系统中，建议使用 time.time()，在 Windows 系统中，建议使用 time.clock()
+        start_all =time.time()  # time.time()为1970.1.1到当前时间的毫秒数
+        # 方式一：获取json数据
+
+        start_before = time.time()
+        data = request.get_data()
+        json_data = json.loads(data.decode("utf-8"))
+        end_before = time.time()
+        print(json_data)
+
+        start_do = time.time()
+        posters_result = produce_posters(json_data)
+        end_do = time.time()
+
+        start_after = time.time()
+        send_posters_info(posters_result)
+        end_after = time.time()
+
+        # 结束时间
+        end_all = time.time()
+        print("all runing time : %d s " % (end_all - start_all))
+        print("before runing time : %d s " % (end_before - start_before))
+        print("do runing time : %d s " % (end_do - start_do))
+        print("after runing time : %d s " % (end_after - start_after))
+
+        # # 方式二：获取form表单数据
+        # uid = request.form.get('user_id')
+        # taskid = request.form.get('taskid')
+        # style = request.form.get('title')
+        # subtitle = request.form.get('subtitle')
+        # content = request.form.get('content')
+        # logo = request.form.get('logo')
+        # photo = request.form.get('photo')
+        # post_info = {'uid':uid,'taskid':taskid,'style':style,'subtitle':subtitle,'content':content,'logo':logo,'photo':photo}
+        # produce_posters(post_info)
+    return '海报制作中!'
+
+# 访问方式:  http://127.0.0.1:5050/image/?imgurl=background/happy1.jpg
+@app.route('/image/', methods=['GET', 'POST'])
+def get_layer_png():
+    # img = Image.open(imgurl)
+    # print(img)
+    # resp = Response(img, mimetype='image/jpeg')
+    imgurl = request.args.get('imgurl')
+    img = Image.open(imgurl)
+    byte_io = BytesIO()
+    img.save(byte_io, 'PNG')
+    byte_io.seek(0)
+    # resq = Response(img, mimetype="image/jpeg")
+    # str = "/background/happy1.jpg"
+
+    return send_file(byte_io, mimetype='image/png', cache_timeout=0)
+
+
 if __name__ == '__main__':
-    app = Flask(__name__)
-    CORS(app, resources=r'/*')  # r'/*'是通配符，让本服务器所有的URL都允许跨域请求
-
-    # @app.route('/hello', methods=['GET', 'POST'])  # app.route装饰器映射URL和执行的函数，这个设置将根URL映射到了hello_world函数上
-    # def smart_poster():
-    #     if request.method == 'POST':
-    #         send_result()
-    #         return '海报制作中!'
-
-    @app.route('/smartposter',methods=['GET','POST'])  # app.route装饰器映射URL和执行的函数，这个设置将根URL映射到了hello_world函数上
-    def smart_poster():
-        if request.method == 'POST':
-            # 计算海报制作时间，在 Unix 系统中，建议使用 time.time()，在 Windows 系统中，建议使用 time.clock()
-            start_all =time.time()  # time.time()为1970.1.1到当前时间的毫秒数
-            # 方式一：获取json数据
-
-            start_before = time.time()
-            data = request.get_data()
-            json_data = json.loads(data.decode("utf-8"))
-            end_before = time.time()
-            print(json_data)
-
-            start_do = time.time()
-            posters_result = produce_posters(json_data)
-            end_do = time.time()
-
-            start_after = time.time()
-            send_posters_info(posters_result)
-            end_after = time.time()
-
-            # 结束时间
-            end_all = time.time()
-            print("all runing time : %d s " % (end_all - start_all))
-            print("before runing time : %d s " % (end_before - start_before))
-            print("do runing time : %d s " % (end_do - start_do))
-            print("after runing time : %d s " % (end_after - start_after))
-
-            # # 方式二：获取form表单数据
-            # uid = request.form.get('user_id')
-            # taskid = request.form.get('taskid')
-            # style = request.form.get('title')
-            # subtitle = request.form.get('subtitle')
-            # content = request.form.get('content')
-            # logo = request.form.get('logo')
-            # photo = request.form.get('photo')
-            # post_info = {'uid':uid,'taskid':taskid,'style':style,'subtitle':subtitle,'content':content,'logo':logo,'photo':photo}
-            # produce_posters(post_info)
-        return '海报制作中!'
-
-    # 访问方式:  http://127.0.0.1:5050/image/?imgurl=background/happy1.jpg
-    @app.route('/image/', methods=['GET', 'POST'])
-    def get_layer_png():
-        # img = Image.open(imgurl)
-        # print(img)
-        # resp = Response(img, mimetype='image/jpeg')
-        imgurl = request.args.get('imgurl')
-        img = Image.open(imgurl)
-        byte_io = BytesIO()
-        img.save(byte_io, 'PNG')
-        byte_io.seek(0)
-        # resq = Response(img, mimetype="image/jpeg")
-        # str = "/background/happy1.jpg"
-
-        return send_file(byte_io, mimetype='image/png', cache_timeout=0)
 
     app.run(host='0.0.0.0', port=5050, debug=True,threaded = True)
     # 如果服务开启成功，则通知后端服务
