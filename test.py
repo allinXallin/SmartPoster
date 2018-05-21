@@ -1,8 +1,8 @@
-import sys
+import sys,random,os
 
-print(sys.path)
-
-
+if len(os.listdir("res/photo_def/RedFestive")) > 0:
+    print(os.listdir("res/photo_def/RedFestive"))
+    print("you")
 
 
 # from flask import Flask,request

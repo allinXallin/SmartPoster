@@ -2,7 +2,7 @@
 
 <CATALOG>
 	<layout id="t00001">
-		<background></background>
+        <background>bg_cloud.png</background>
 		<foreground></foreground>
 		<title space="h001">
 			<!--约束框左上角的坐标（相对值）-->
@@ -50,8 +50,8 @@
 	</layout>
 
 	<layout id="t00002">
+        <background>bg_cloud.png</background>
 		<foreground></foreground>
-		<background></background>
 		<title space="h001">
 			<point_lefttop>6.7|14.2</point_lefttop>
 			<point_rightbottom>93.3|29.1</point_rightbottom>
@@ -94,8 +94,8 @@
 	</layout>
 
 	<layout id="t00003">
+        <background>bg_cloud.png</background>
 		<foreground></foreground>
-		<background></background>
 		<title space="h001">
 			<point_lefttop>4.8|63.1</point_lefttop>
 			<point_rightbottom>95.2|77.9</point_rightbottom>
@@ -138,8 +138,8 @@
 	</layout>
 
 	<layout id="t00004">
+        <background>bg_cloud.png</background>
 		<foreground></foreground>
-		<background></background>
 		<title space="h001">
 			<point_lefttop>66.2|14.8</point_lefttop>
 			<point_rightbottom>81.9|74.2</point_rightbottom>

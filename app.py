@@ -9,14 +9,44 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
 from flask import Flask, request, Response, send_file, make_response
 from io import BytesIO
 from flask_cors import CORS
-#import matplotlib.pyplot as plt
 
 
 
+# 风格类
+class Style:
+    def __init__(self):
+        self.name = None
+        self.layout_ids = None
+        self.color_group_ids = None
+        self.font_familys = None
+
+    # 解析style.xml文件，通过style找到匹配的name、template_ID、color_group_ID、font_family
+    def get_layout_id_by_style(self, input_style):
+        try:
+            etree = ET.parse('res/xml/style.xml')
+            root = etree.getroot()
+        except Exception as e:
+            print(str(e))
+            print('Error:cannot parse file : res/xml/style.xml.')
+            return -1
+
+        styles = root.findall('style')
+        for eachstyle in styles:
+            if eachstyle.get('name') == input_style:
+                # 注意要判断子元素是否为空，为空的话提醒为模板增加元素
+                for child in eachstyle.getchildren():
+                    if child.tag == "name":
+                        self.name = child.text.strip()
+                    if child.tag == "layout_IDs":
+                        self.layout_ids = child.text.strip().split('|')
+                    if child.tag == "color_group_IDs":
+                        self.color_group_ids = child.text.strip().split('|')
+                    if child.tag == "font_family":
+                        self.font_familys = child.text.strip().split('|')
 
 
-# 风格模板类
-class StyleLayout:
+# 模板类
+class Layout:
     # 静态字段tmpl_count，用来统计使用的模板总数
     tmpl_count = 0
 
@@ -48,26 +78,6 @@ class TextConstraint:
         right_bottom = self.right_bottom.strip().split("|")
         return float(left_top[0]) / 100 * WIDTH, float(left_top[1]) / 100 * HEIGHT, float(
             right_bottom[0]) / 100 * WIDTH, float(right_bottom[1]) / 100 * HEIGHT
-
-
-# # 副标题元素类
-# class SubTitle:
-#     def __init__(self, left_top, right_bottom, min_size, max_size,align):
-#         self.left_top = left_top
-#         self.right_bottom = right_bottom
-#         self.min_size = min_size
-#         self.max_size = max_size
-#         self.align = align
-#
-#
-# # 文字内容元素类
-# class Content:
-#     def __init__(self, left_top, right_bottom, min_size, max_size, align):
-#         self.left_top = left_top
-#         self.right_bottom = right_bottom
-#         self.min_size = min_size
-#         self.max_size = max_size
-#         self.align = align
 
 
 # LOGO元素类
@@ -284,14 +294,15 @@ def produce_posters(json_data):
         os.makedirs(path)
 
     # 获取用户选择的风格类型，并在模板库中选择前N个模板进行制作
-    style = task_info['style']
-    layout_id, color_group_id, fonts_name = get_layout_id_by_style(style)
+    style = Style()
+    style.get_layout_id_by_style(task_info['style'])
+    print(style.layout_ids)
 
-    # 根据布局ID从layout.xml文件中选择，并把模板约束信息保存到style_layouts中
-    style_layouts = get_layouts_by_id(layout_id)
+    # 根据布局ID从layout.xml文件中选择，并把模板约束信息保存到layouts中
+    layouts = get_layouts_by_id(style.layout_ids)
 
     # 根据色彩组ID从色彩库文件color.xml选出色彩组并保存到style_colors
-    style_colors = get_colors_by_id(color_group_id)
+    style_colors = get_colors_by_id(style.color_group_ids)
 
     RECOMMEND_NUM = 4  # 返回给用户的推荐海报数为5，可调整
     count = 0  # 统计制作海报的个数
@@ -299,129 +310,116 @@ def produce_posters(json_data):
     posters_result = {}  # 制作好的海报，以任务为单位，里面包含多个psd格式信息
     posters_result['taskid'] = json_data.get('taskid')
 
-
     # 若tyle_layouts、style_colors组合总数小于recommend_num，则取小的为主
     for k in range(
-            RECOMMEND_NUM if len(style_layouts) * len(style_colors) > RECOMMEND_NUM else len(style_layouts) * len(
+            RECOMMEND_NUM-1 if len(layouts) * len(style_colors) > RECOMMEND_NUM-1 else len(layouts) * len(
                     style_colors)):
         # 随机从style_layouts、style_colors两个列表中抽取一对布局和色彩组合，但保证不能有重复
-        i, j = get_new_couple_index(len(style_layouts) - 1, len(style_colors) - 1, couple)
+        i, j = get_new_couple_index(len(layouts) - 1, len(style_colors) - 1, couple)
         couple.append([i, j])
         # 开始制作海报,输入参数1：海报模板约束样式；参数2：用户上传元素。返回值：json格式
-        z = random.randint(0, len(fonts_name) - 1)
-        poster = draw_a_poster(task_info, style_layouts[i], style_colors[j], fonts_name[z], path)  # path图层信息存放路径
+        z = random.randint(0, len(style.font_familys) - 1)
+        poster = draw_a_poster(task_info, style.name, layouts[i], style_colors[j], style.font_familys[z], path)  # path图层信息存放路径
         # 计算海报存放路径path下文件数num，则此次制作出来的海报的键即为该海报psd生成树信息的txt文件所在目录
         num = len([x for x in os.listdir(path)])
         posters_result[path + "/p_" + str(num) +"/p_"+str(num)+".txt"] = poster
         #poster = json.dumps(poster, ensure_ascii=False)
+
+    # ======每个任务默认都需要给用户推荐一个利用我们自己图像库生成的海报；因此上面的循环实际上产生了（RECOMMEND_NUM-1）个海报
+    # 随机从style_layouts、style_colors两个列表中抽取一对布局和色彩组合，但保证不能和之前的产生重复
+    i, j = get_new_couple_index(len(layouts) - 1, len(style_colors) - 1, couple)
+    z = random.randint(0, len(style.font_familys) - 1)
+    # 最后一张的photo必须是设计师提供的图像库，但若图像库无图，则还是用用户上传的photo
+    if len(os.listdir("res/photo_def/" + style.name)) > 0:  # 图像库中推荐照片个数大于0
+        photos = os.listdir("res/photo_def/" + style.name)
+        task_info["photo"] = f'res/photo_def/{style.name}/{photos[random.randint(0, len(photos)-1)]}'  # 从图像库中随机选一张图片
+    poster = draw_a_poster(task_info, style.name, layouts[i], style_colors[j], style.font_familys[z], path)
+    num = len([x for x in os.listdir(path)])
+    posters_result[path + "/p_" + str(num) +"/p_"+str(num)+".txt"] = poster
+
+
     return posters_result
 
 
-# #===========================本地测试版=========================
-# # 制作好海报后，以POST方式发送数据回后端
-# def send_posters_info(posters_result):
-#     URL = 'http://172.16.0.200/api/v1/psdinfo'  # web后端地址
-#     # 待返回给后端的信息，post给后端
-#     post_data = {}
-#     post_data['task_id'] = posters_result['taskid']
-#     post_data['AlgorithmUpgrade'] = 1
-#     posters_result.pop('taskid')
-#     k = 1 # 海报计数器
-#     pre_imgurl = "http://172.16.0.50:5050/image/?imgurl="
-#     #先移除posters_result字典中taskid，其余则是海报相关的信息
-#     files={}
-#     for key,value in posters_result.items():
-#         post_data['preview_url_' + str(k)] = pre_imgurl + value['name']
-#         files['psdinfo_' + str(k)] = open(key, 'rb')
-#         k=k+1
-#     print(post_data)
-#     #以post方式发送给web后端
-#     try:
-#         #post_data = json.dumps(post_data)
-#         response = requests.post(URL,post_data,files=files)
-#         #response = json.loads(response)
-#         print(response.text)
-#     except Exception as e:
-#         # 若海报信息post传递失败，则将海报放到制作好的海报队列中
-#         #=======================================================
-#
-#         print(str(e))
-#
-#     # 使用requests发送POST请求。   一个http请求 = 请求行 + 请求报头 + 消息主体
-#     # # 方式一：application/x-www-form-urlencoded      form表单形式提交数据（需构造一个字典）
-#     # URL = 'http://120.78.10.209/api/v1/psdinfo'
-#     # data = {'preimg_url_1':'http://172.16.0.70:5050/image/?imgurl=background/happy1.jpg','preimg_url_2':'http://172.16.0.70:5050/image/?imgurl=background/happy2.jpg'}
-#     # req = requests.post(URL,data=data)
-#     # print(req.json())
-#
-#     # # 方式二：application/json    以json串提交数据
-#     # URL = 'http://120.78.10.209/api/v1/psdinfo'
-#     # data = json.dumps({'key1':'value', 'key2':'value2'})
-#     # req = requests.post(URL,data=data)
-#     # print(req.text)
-#
-#     # # 方式三；multipart/form-data     用来上传文件
-#     # URL = 'http://120.78.10.209/api/v1/psdinfo'
-#     # file = {'file': open('outputPosters/1/1/p_1/p_1.txt', 'rb')}
-#     # req = requests.post(URL,files=file)
-#     # print(req.text)
-
-
-
-
-#======================服务器部署版============================
+#===========================本地测试版=========================
 # 制作好海报后，以POST方式发送数据回后端
 def send_posters_info(posters_result):
-    URL = 'http://wx.weicheche.cn/wxposters/api/v1/psdinfo'
+    URL = 'http://172.16.0.200/api/v1/psdinfo'  # web后端地址
+    # 待返回给后端的信息，post给后端
     post_data = {}
     post_data['task_id'] = posters_result['taskid']
     post_data['AlgorithmUpgrade'] = 1
     posters_result.pop('taskid')
-    k = 1
-    pre_imgurl = "http://120.78.10.209:5050/image/?imgurl="
+    k = 1 # 海报计数器
+    pre_imgurl = "http://172.16.0.50:5050/image/?imgurl="
+    #先移除posters_result字典中taskid，其余则是海报相关的信息
     files={}
     for key,value in posters_result.items():
         post_data['preview_url_' + str(k)] = pre_imgurl + value['name']
-
         files['psdinfo_' + str(k)] = open(key, 'rb')
         k=k+1
     print(post_data)
+    #以post方式发送给web后端
     try:
+        #post_data = json.dumps(post_data)
         response = requests.post(URL,post_data,files=files)
-        #print(response.text)
+        #response = json.loads(response)
+        print(response.text)
     except Exception as e:
+        # 若海报信息post传递失败，则将海报放到制作好的海报队列中
+        #=======================================================
+
         print(str(e))
 
+    # 使用requests发送POST请求。   一个http请求 = 请求行 + 请求报头 + 消息主体
+    # # 方式一：application/x-www-form-urlencoded      form表单形式提交数据（需构造一个字典）
+    # URL = 'http://120.78.10.209/api/v1/psdinfo'
+    # data = {'preimg_url_1':'http://172.16.0.70:5050/image/?imgurl=background/happy1.jpg','preimg_url_2':'http://172.16.0.70:5050/image/?imgurl=background/happy2.jpg'}
+    # req = requests.post(URL,data=data)
+    # print(req.json())
 
-# 解析style.xml文件，通过style找到匹配的template_ID、color_group_ID、font_family
-def get_layout_id_by_style(input_style):
-    try:
-        etree = ET.parse('res/xml/style.xml')
-        root = etree.getroot()
-    except Exception as e:
-        print(str(e))
-        print('Error:cannot parse file : res/xml/style.xml.')
-        return -1
+    # # 方式二：application/json    以json串提交数据
+    # URL = 'http://120.78.10.209/api/v1/psdinfo'
+    # data = json.dumps({'key1':'value', 'key2':'value2'})
+    # req = requests.post(URL,data=data)
+    # print(req.text)
 
-    layout_IDs = []
-    color_group_IDs = []
-    font_familys = []
-    styles = root.findall('style')
-    for eachstyle in styles:
-        if eachstyle.find('name').text == input_style:
-            # 注意要判断子元素是否为空，为空的话提醒为模板增加元素
-            for child in eachstyle.getchildren():
-                if child.tag == "layout_IDs":
-                    layout_IDs = child.text.strip().split('|')
-                if child.tag == "color_group_IDs":
-                    color_group_IDs = child.text.strip().split('|')
-                if child.tag == "font_family":
-                    font_familys = child.text.strip().split('|')
-    return layout_IDs, color_group_IDs, font_familys
+    # # 方式三；multipart/form-data     用来上传文件
+    # URL = 'http://120.78.10.209/api/v1/psdinfo'
+    # file = {'file': open('outputPosters/1/1/p_1/p_1.txt', 'rb')}
+    # req = requests.post(URL,files=file)
+    # print(req.text)
+
+
+
+
+# #======================服务器部署版============================
+# # 制作好海报后，以POST方式发送数据回后端
+# def send_posters_info(posters_result):
+#     URL = 'http://wx.weicheche.cn/wxposters/api/v1/psdinfo'
+#     post_data = {}
+#     post_data['task_id'] = posters_result['taskid']
+#     post_data['AlgorithmUpgrade'] = 1
+#     posters_result.pop('taskid')
+#     k = 1
+#     pre_imgurl = "http://120.78.10.209:5050/image/?imgurl="
+#     files={}
+#     for key,value in posters_result.items():
+#         post_data['preview_url_' + str(k)] = pre_imgurl + value['name']
+#
+#         files['psdinfo_' + str(k)] = open(key, 'rb')
+#         k=k+1
+#     print(post_data)
+#     try:
+#         response = requests.post(URL,post_data,files=files)
+#         #print(response.text)
+#     except Exception as e:
+#         print(str(e))
+
 
 
 # 解析layout.xml文件，通过layout的id找到title、sub_title、content、logo和photo的约束空间描述
-def get_layouts_by_id(layout_IDs):
+def get_layouts_by_id(layout_ids):
     try:
         etree = ET.parse("res/xml/layout.xml")
         root = etree.getroot()
@@ -431,7 +429,7 @@ def get_layouts_by_id(layout_IDs):
     # 用style_layouts存储符合风格类型的布局样式
     style_layouts = []
     layouts = root.findall('layout')
-    for index in layout_IDs:
+    for index in layout_ids:
         for each_layout in layouts:
             if each_layout.get('id') == index:
                 for child in each_layout.getchildren():
@@ -456,7 +454,7 @@ def get_layouts_by_id(layout_IDs):
                             child)
                         photo = Photo(left_top, right_bottom, right_top, left_bottom, align, precent, geometry,face_lefttop,face_rightbottom)
                 # 生成一个模板实例，并添加到模板列表中
-                tmpl_impl = StyleLayout(background,foreground, title, sub_title, content, logo, photo)
+                tmpl_impl = Layout(background,foreground, title, sub_title, content, logo, photo)
                 style_layouts.append(tmpl_impl)
     return style_layouts
 
@@ -563,7 +561,7 @@ def get_new_couple_index(len1, len2, couple):
 
 
 # 创建画布并开始绘制画报不同图层
-def draw_a_poster(userInfoDict, style_layout, style_color, font, path):
+def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, path):
     psd_layers = {}  # 海报格式信息，psd图层树
 
     # 计算海报存放路径path下文件数num，该海报文件名为'num+1'
@@ -575,10 +573,10 @@ def draw_a_poster(userInfoDict, style_layout, style_color, font, path):
     # 定义海报的整个尺寸
     # WIDTH = 1656
     # HEIGHT = 2696
-    WIDTH = 828
-    HEIGHT = 1348
-    # WIDTH = 375
-    # HEIGHT = 1480
+    # WIDTH = 828
+    # HEIGHT = 1348
+    WIDTH = 750
+    HEIGHT = 1220
     # 在海报json里面添加宽高信息
     psd_layers['width'] = WIDTH
     psd_layers['height'] = HEIGHT
@@ -587,15 +585,21 @@ def draw_a_poster(userInfoDict, style_layout, style_color, font, path):
     psd_layers['background'] = {}
     psd_layers['layers'] = []
 
-    # 若有预设背景图，则用预设背景图否则根据颜色组绘制单一颜色
+    # 不管怎样，先绘制单一底色
+    img = Image.new("RGB", (WIDTH, HEIGHT), str(style_color.master))
+    # 若有预设背景图，则用预设背景图单一底色结合作为背景色
     if style_layout.background is not None:
-        background = Image.open(style_layout.background)
-    else:
-        background = Image.new("RGB", (WIDTH, HEIGHT), str(style_color.master))
+        fgs = style_layout.background.strip().split('|')
+        index = random.randint(0, len(fgs)-1)
+        background = Image.open('res/background/' + fgs[index])
+        # 绘制背景图到img上    注意：此时背景色跟图片的分辨率一样，可直接paste，后期可能不一样;
+        #                          但可通过resize()函数进行处理
+        background = background.resize((WIDTH, HEIGHT))
+        img.paste(background, (0, 0, WIDTH, HEIGHT), mask=background)
+        # 如果有纹理，则将纹理和背景图合并并保存到对应目录下，从而覆盖之前的bg.png
+        img.save(poster_path + '/bg.png')
     # 将绘制好的背景保存到对应目录下
-    background.save(poster_path + '/bg.png')
-
-    img = background
+    img.save(poster_path + '/bg.png')
 
     # 制作类似json格式的图层信息，并添加到psd_layers中的'layers'列表中去
     json_background = {}
@@ -603,22 +607,54 @@ def draw_a_poster(userInfoDict, style_layout, style_color, font, path):
     psd_layers['background']['image'] = poster_path + '/bg.png'
     psd_layers['background']['opacity'] = 1
 
-    # 绘制photo   注：photo可以为空    注：参数shape表示photo容器的形状：Q-四边形 T-三角形 C-圆形
-    if userInfoDict['photo'] is not None:
-        photo_png, psd_layers = draw_photo(img, psd_layers, userInfoDict["photo"], style_layout.photo, WIDTH, HEIGHT, 'Q')
-        photo_png.save(poster_path + '/photo.png')
-        psd_layers['layers'][-1]['image'] = poster_path + '/photo.png'
+
+    # # 若有预设【背景图】，则用预设背景图
+    # if style_layout.background is not None:
+    #     fgs = style_layout.background.strip().split('|')
+    #     index = random.randint(0,len(fgs)-1)
+    #     background = Image.open('res/background/' + fgs[index])
+    #     # 绘制背景图到img上    注意：此时背景色跟图片的分辨率一样，可直接paste，后期可能不一样;
+    #     #                          但可通过resize()函数进行处理
+    #     background = background.resize((WIDTH,HEIGHT))
+    #     img.paste(background,(0,0,WIDTH,HEIGHT),mask=background)
+    #     # 如果有纹理，则将纹理和背景图合并并保存到对应目录下，从而覆盖之前的bg.png
+    #     img.save(poster_path + '/bg.png')
+    #
+    #     # 制作类似json格式的图层信息，并添加到psd_layers中的'layers'列表中去
+    #     json_layer = {}
+    #     number = len(psd_layers['layers']) + 1  # 图层id
+    #     json_layer['number'] = number
+    #     json_layer['name'] = "背景图"
+    #     json_layer['left'] = 0
+    #     json_layer['top'] = 0
+    #     json_layer['width'] = WIDTH
+    #     json_layer['height'] = HEIGHT
+    #     json_layer['opacity'] = 1
+    #     json_layer['image'] = poster_path + '/bg.png'
+
+
+    # 如果用户没上传photo，则采用设计者提供的美图（以风格为单位提供）
+    # 绘制photo   注：若photo为空，则使用设计师默认提供的美图    注：参数shape表示photo容器的形状：Q-四边形 T-三角形 C-圆形
+    if userInfoDict["photo"] is None:
+        photos = os.listdir("res/photo_def/"+style_name)
+        photo_url =f'res/photo_def/{style_name}/{photos[random.randint(0, len(photos)-1)]}'
+    else:
+        photo_url = userInfoDict["photo"]
+    print(photo_url)
+    photo_png, psd_layers = draw_photo(img, psd_layers, photo_url, style_layout.photo, WIDTH, HEIGHT, 'Q')
+    photo_png.save(poster_path + '/photo.png')
+    psd_layers['layers'][-1]['image'] = poster_path + '/photo.png'
 
 
     # 若有预设【前景图】，则用预设前景图
     if style_layout.foreground is not None:
         fgs = style_layout.foreground.strip().split('|')
-        index = random.randint(0,len(fgs)-1)
+        index = random.randint(0, len(fgs)-1)
         foreground = Image.open('res/foreground/' + fgs[index])
         # 绘制前景图到img上    注意：此时前景色跟图片的分辨率一样，可直接paste，后期可能不一样;
         #                          但可通过resize()函数进行处理
         foreground = foreground.resize((WIDTH,HEIGHT))
-        img.paste(foreground,(0,0,WIDTH,HEIGHT),mask=foreground)
+        img.paste(foreground, (0, 0, WIDTH, HEIGHT), mask=foreground)
         # 将前景图保存到对应目录下
         foreground.save(poster_path + '/fg.png')
 
@@ -1057,13 +1093,14 @@ def draw_img_in_rect(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
                 box_crop = (0, int((int(h / w * box_w) - box_h) / 2), box_w, int((int(h / w * box_w) - box_h) / 2) + box_h)
                 temp_photo = temp_photo.crop(box_crop)
                 box_resize = box
-                img.paste(temp_photo, box_resize)  # 在原始背景图的box_resize位置黏贴temp_photo
+                #print(temp_photo.mode)
+                img.paste(temp_photo, box_resize, mask=temp_photo)  # 在原始背景图的box_resize位置黏贴temp_photo
             else:  # 高度优先等比例缩放
                 temp_photo = photo.resize((int(w / h * box_h), box_h))  # 高度优先等比例缩放
                 box_crop = (int((int(w / h * box_h) - box_w) / 2), 0, int((int(w / h * box_h) - box_w) / 2) + box_w, box_h)
                 temp_photo = temp_photo.crop(box_crop)
                 box_resize = box
-                img.paste(temp_photo, box_resize)
+                img.paste(temp_photo, box_resize, mask=temp_photo)
         else:  # 不允许裁剪，与允许裁剪的缩放方式刚好相反
             w, h = photo.size
             if w / h < (box[2] - box[0]) / (box[3] - box[1]):
@@ -1106,7 +1143,7 @@ def draw_img_in_rect(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
 
     # 制作类似json格式的图像图层信息，并添加到psd_layers中的'layers'列表中去
     json_layer = {}
-    number = len(psd_layers['layers']) + 1  # 图层id
+    number = len(psd_layers['layers'])  + 1  # 图层id
     json_layer['number'] = number
     json_layer['name'] = "图像图层"
     json_layer['left'] = box_resize[0]
