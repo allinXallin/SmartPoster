@@ -418,6 +418,34 @@ def send_posters_info(posters_result):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 解析layout.xml文件，通过layout的id找到title、sub_title、content、logo和photo的约束空间描述
 def get_layouts_by_id(layout_ids):
     try:
@@ -560,6 +588,45 @@ def get_new_couple_index(len1, len2, couple):
     return i, j
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 创建画布并开始绘制画报不同图层
 def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, path):
     psd_layers = {}  # 海报格式信息，psd图层树
@@ -586,7 +653,7 @@ def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, pat
     psd_layers['layers'] = []
 
     # 不管怎样，先绘制单一底色
-    img = Image.new("RGB", (WIDTH, HEIGHT), str(style_color.master))
+    img = Image.new("RGBA", (WIDTH, HEIGHT), str(style_color.master))
     # 若有预设背景图，则用预设背景图单一底色结合作为背景色
     if style_layout.background is not None:
         fgs = style_layout.background.strip().split('|')
@@ -595,9 +662,8 @@ def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, pat
         # 绘制背景图到img上    注意：此时背景色跟图片的分辨率一样，可直接paste，后期可能不一样;
         #                          但可通过resize()函数进行处理
         background = background.resize((WIDTH, HEIGHT))
-        img.paste(background, (0, 0, WIDTH, HEIGHT), mask=background)
         # 如果有纹理，则将纹理和背景图合并并保存到对应目录下，从而覆盖之前的bg.png
-        img.save(poster_path + '/bg.png')
+        img.paste(background, (0, 0, WIDTH, HEIGHT), mask=background)
     # 将绘制好的背景保存到对应目录下
     img.save(poster_path + '/bg.png')
 
@@ -641,12 +707,13 @@ def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, pat
     else:
         photo_url = userInfoDict["photo"]
     print(photo_url)
-    photo_png, psd_layers = draw_photo(img, psd_layers, photo_url, style_layout.photo, WIDTH, HEIGHT, 'Q')
+    photo_png, psd_layers = draw_photo(img, psd_layers, photo_url, style_layout.photo, WIDTH, HEIGHT)
     photo_png.save(poster_path + '/photo.png')
+    print(psd_layers)
     psd_layers['layers'][-1]['image'] = poster_path + '/photo.png'
 
 
-    # 若有预设【前景图】，则用预设前景图
+    # 若有预设【前景图】，则添加前景图
     if style_layout.foreground is not None:
         fgs = style_layout.foreground.strip().split('|')
         index = random.randint(0, len(fgs)-1)
@@ -1017,18 +1084,23 @@ def draw_text(img, psd_layers, text, constraint, color, font, multiline_or_not, 
 
 
 # 绘制图片信息（logo、photo）至背景图片上，同时生成单独的图层返回
-def draw_photo(img, psd_layers, url, constraint, WIDTH, HEIGHT, shape):
-    if shape == 'Q':
+# return语句要与上面空一隔，否则会报错：“UnboundLocalError: local variable 'layer_png' referenced before assignment”
+def draw_photo(img, psd_layers, url, constraint, WIDTH, HEIGHT):
+    layer_png = img
+    if constraint.geometry == 'RECT' or constraint.geometry == 'SQUARE':
         if constraint.is_rect() is True:
             layer_png, psd_layers = draw_img_in_rect(img, psd_layers, url, constraint, WIDTH, HEIGHT,True)  # 一般不支持裁剪
         else:
             layer_png, psd_layers = draw_img_in_rect(img, psd_layers, url, constraint, WIDTH, HEIGHT,True)  # 一般不支持裁剪
             # draw_img_in_quadrilateral(img, url, constraint, WIDTH, HEIGHT, PERCENT_IMG_SPACE) # 若是不规则四边形，必须裁剪
-    elif shape == 'T':
-        draw_img_in_triangle()
-    elif shape == 'C':
-        draw_img_in_circle()
-
+    elif constraint.geometry == 'QUAD':
+        #  暂时用rect（）代替
+        layer_png, psd_layers = draw_img_in_rect(img, psd_layers, url, constraint, WIDTH, HEIGHT, True)  # 一般不支持裁剪
+    elif constraint.geometry == 'CIRCLE':
+        layer_png, psd_layers = draw_img_in_circle(img, psd_layers, url, constraint, WIDTH, HEIGHT, True)  # 一般不支持裁剪
+    elif constraint.geometry == 'T':
+        #  暂时用rect（）代替
+        layer_png, psd_layers = draw_img_in_rect(img, psd_layers, url, constraint, WIDTH, HEIGHT, True)  # 一般不支持裁剪
     return layer_png, psd_layers
 
 
@@ -1363,8 +1435,150 @@ def draw_img_in_triangle():
     print('sanjiaoxing')
 
 
-def draw_img_in_circle():
-    print('yuanxing')
+# 绘制图像信息至圆形约束框（圆形约束框也是正放形约束框里）里，同时生成单独的图层返回
+def draw_img_in_circle(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
+    # 根据长宽计算左上角和右下角的绝对位置
+    left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(WIDTH, HEIGHT)
+    # 按比例缩放约束空间
+    PERCENT_IMG_SPACE = float(constraint.precent) / 100
+    LT_x, LT_y, RB_x, RB_y = shrink_rect(left_top_x, left_top_y, right_bottom_x, right_bottom_y, PERCENT_IMG_SPACE)
+    # resize操作需要整数,box为图片缩放大小和粘贴区域
+    box = (LT_x, LT_y, RB_x, RB_y)
+    box_resize = ()  # 实际在原始图中绘制的位置
+
+    # 获取网络or本地图片
+    try:  # 获取网络地址
+        response = requests.get(url)
+        photo = Image.open(BytesIO(response.content))
+        # photo = photo.convert('RGBA')
+    except Exception as e:  # 网络地址获取失败的话获取本地图片
+        photo = Image.open(url).convert("RGBA")
+
+    photo.save('d1.png')
+    # 判断是否有人脸，或者感兴趣区域ROI，并将ROI移动到布局显著性区域
+    face_location = face_detect(photo)
+    if face_location is not None:  # 有人脸
+        # 根据长宽计算人脸放置位置的左上角和右下角的绝对位置
+        LT_face_x, LT_face_y, RB_face_x, RB_face_y = constraint.get_face_space(WIDTH, HEIGHT)
+        # 分别计算：①上传照片中检测到的真实人脸的中心位置；②约束框中人脸放置位置的中心点
+        face_from_center_x = int(face_location[0] + face_location[2] / 2)
+        face_from_center_y = int(face_location[1] + face_location[3] / 2)
+        face_to_center_x = int((LT_face_x + RB_face_x) / 2)
+        face_to_center_y = int((LT_face_y + RB_face_y) / 2)
+        # 分别计算：①源图中人脸宽高；②粘贴目标图中人脸约束空间的宽高
+        face_from_W = face_location[2]
+        face_from_H = face_location[3]
+        face_to_W = RB_face_x - LT_face_x
+        face_to_H = RB_face_y - LT_face_y
+
+        if face_from_W / face_from_H > face_to_W / face_to_H:
+            # 计算from图中左上角的横纵坐标（from_left_width_x，from_up_height_y）
+            from_left_width = (face_to_center_x - LT_x) * (face_from_W / 2) / (face_to_W / 2)
+            from_left_width_x = face_from_center_x - from_left_width
+            from_top_height = (face_to_center_y - LT_y) * (face_from_H / 2) / (
+                        (face_to_W / 2) * face_from_H / face_from_W)
+            from_top_height_y = face_from_center_y - from_top_height
+            # 计算from图中右下角的横纵坐标（from_right_width_x，from_bottom_height_y）
+            from_right_width = (RB_x - face_to_center_x) * (face_from_W / 2) / (face_to_W / 2)
+            from_right_width_x = face_from_center_x + from_right_width
+            from_bottom_height = (RB_y - face_to_center_y) * (face_from_H / 2) / (
+                        (face_to_W / 2) * face_from_H / face_from_W)
+            from_bottom_height_y = face_from_center_y + from_bottom_height
+            # 从源照片中截取人脸显著部门
+            photo_crop = photo.crop((from_left_width_x, from_top_height_y, from_right_width_x, from_bottom_height_y))
+            temp_photo = photo_crop.resize((box[2] - box[0], box[3] - box[1]))
+            # 将正方形圆形化
+            temp_photo = square2cricle(temp_photo)
+            box_resize = (box[0],box[1],box[0]+temp_photo.size[0],box[1]+temp_photo.size[1])
+            img.paste(temp_photo, box_resize)
+    else:  # 无人脸
+        if mode is True:  # 允许裁剪
+            w, h = photo.size
+            box_w = box[2] - box[0]
+            box_h = box[3] - box[1]
+            if w / h < box_w / box_h:  # 宽度优先等比例缩放
+                temp_photo = photo.resize((box_w, int(h / w * box_w)))  # 宽度优先等比例缩放
+                box_crop = (
+                0, int((int(h / w * box_w) - box_h) / 2), box_w, int((int(h / w * box_w) - box_h) / 2) + box_h)
+                temp_photo = temp_photo.crop(box_crop)
+                temp_photo.save('d2.png')
+                # 将正方形圆形化
+                temp_photo = square2cricle(temp_photo)
+                box_resize = (box[0], box[1], box[0] + temp_photo.size[0], box[1] + temp_photo.size[1])
+                temp_photo.save('d3.png')
+                img.paste(temp_photo, box_resize, mask=temp_photo)  # 在原始背景图的box_resize位置黏贴temp_photo
+            else:  # 高度优先等比例缩放
+                temp_photo = photo.resize((int(w / h * box_h), box_h))  # 高度优先等比例缩放
+                box_crop = (
+                int((int(w / h * box_h) - box_w) / 2), 0, int((int(w / h * box_h) - box_w) / 2) + box_w, box_h)
+                temp_photo = temp_photo.crop(box_crop)
+                temp_photo.save('d4.png')
+                # 将正方形圆形化
+                temp_photo = square2cricle(temp_photo)
+                box_resize = (box[0], box[1], box[0] + temp_photo.size[0], box[1] + temp_photo.size[1])
+                temp_photo.save('d5.png')
+                img.paste(temp_photo, box_resize, mask=temp_photo)
+        else:  # 不允许裁剪，与允许裁剪的缩放方式刚好相反
+            w, h = photo.size
+            if w / h < (box[2] - box[0]) / (box[3] - box[1]):
+                temp_photo = photo.resize((int(w / h * (box[3] - box[1])), box[3] - box[1]))  # 高度优先等比例缩放
+                # 根据图片对齐方式计算粘贴的位置box_temp
+                if constraint.align == "left":  # 图片左对齐
+                    box_resize = (box[0], box[1], box[0] + temp_photo.size[0], box[1] + temp_photo.size[1])
+                elif constraint.align == "center":  # 图片中心对齐
+                    # 中心对齐时，先计算logo放置位置的左上角的X坐标
+                    X = int(((box[2] - box[0]) - (temp_photo.size[0])) / 2 + box[0])
+                    box_resize = (X, box[1], X + temp_photo.size[0], box[1] + temp_photo.size[1])
+                elif constraint.align == "right":  # 否则就是右对齐
+                    box_resize = (box[2] - temp_photo.size[0], box[1], box[2], box[1] + temp_photo.size[1])
+                else:  # 默认也是中心对齐
+                    X = int(((box[2] - box[0]) - (temp_photo.size[0])) / 2 + box[0])
+                    box_resize = (X, box[1], X + temp_photo.size[0], box[1] + temp_photo.size[1])
+                # 将正方形圆形化
+                temp_photo = square2cricle(temp_photo)
+                box_resize = (box_resize[0], box_resize[1], box_resize[0] + temp_photo.size[0], box_resize[1] + temp_photo.size[1])
+                # 粘贴图片
+                if temp_photo.mode == 'RGBA':
+                    img.paste(temp_photo, box_resize, mask=temp_photo)
+                else:
+                    img.paste(temp_photo, box_resize)
+            else:
+                temp_photo = photo.resize((box[2] - box[0], int(h / w * (box[2] - box[0]))))  # 宽度优先等比例缩放
+                if constraint.align == "top":  # 图片顶端对齐
+                    box_resize = (box[0], box[1], box[0] + temp_photo.size[0], box[1] + temp_photo.size[1])
+                elif constraint.align == "right":  # 图片中心对齐
+                    # 此时，中心对齐时，先计算logo放置位置的左上角的Y坐标
+                    Y = int(((box[3] - box[1]) - (temp_photo.size[1])) / 2 + box[1])
+                    box_resize = (box[0], Y, box[0] + temp_photo.size[0], Y + temp_photo.size[1])
+                elif constraint.align == "bottom":  # 否则就是底端对齐
+                    box_resize = (box[0], box[3] - temp_photo.size[1], box[0] + temp_photo.size[0], box[3])
+                else:  # 默认也采用中心对齐
+                    Y = int(((box[3] - box[1]) - (temp_photo.size[1])) / 2 + box[1])
+                    box_resize = (box[0], Y, box[0] + temp_photo.size[0], Y + temp_photo.size[1])
+                # 将正方形圆形化
+                temp_photo = square2cricle(temp_photo)
+                box_resize = (box_resize[0], box_resize[1], box_resize[0] + temp_photo.size[0], box_resize[1] + temp_photo.size[1])
+                # 粘贴图片
+                if temp_photo.mode == 'RGBA':
+                    img.paste(temp_photo, box_resize, mask=temp_photo)  # 图片粘贴
+                else:
+                    img.paste(temp_photo, box_resize)  # 图片粘贴
+
+    # 制作类似json格式的图像图层信息，并添加到psd_layers中的'layers'列表中去
+    json_layer = {}
+    number = len(psd_layers['layers']) + 1  # 图层id
+    json_layer['number'] = number
+    json_layer['name'] = "图像图层"
+    json_layer['left'] = box_resize[0]
+    json_layer['top'] = box_resize[1]
+    json_layer['width'] = box_resize[2] - box_resize[0]
+    json_layer['height'] = box_resize[3] - box_resize[1]
+    json_layer['opacity'] = 1
+    # 将制作好的图像图层添加进psd_layers的layers中去
+    psd_layers['layers'].append(json_layer)
+    return temp_photo, psd_layers
+
+
 
 
 # 按百分比缩小长方形约束空间
@@ -1420,7 +1634,7 @@ def hex2rgb(hex):
     return r, g, b
 
 
-# 人脸检测，
+# 人脸检测
 def face_detect(photo):
     # 读取训练好的分类器，haarcascade_frontalface_default.xml存储在cv2包的data文件夹内
     face_cascade = cv2.CascadeClassifier('res/haarcascade/haarcascade_frontalface_default.xml')
@@ -1451,6 +1665,26 @@ def face_detect(photo):
         return None
 
 
+# 将正方形照片圆形化
+def square2cricle(img):
+    ima = img.convert("RGBA")
+    size = ima.size
+    # 因为是要圆形，所以需要正方形的图片
+    r2 = min(size[0], size[1])
+    if size[0] != size[1]:
+        ima = ima.resize((r2, r2), Image.ANTIALIAS)
+    imb = Image.new('RGBA', (r2, r2),(255,255,255,0))
+    pima = ima.load()
+    pimb = imb.load()
+    r = float(r2/2) #圆心横坐标
+    for i in range(r2):
+        for j in range(r2):
+            lx = abs(i-r+0.5)#到圆心距离的横坐标
+            ly = abs(j-r+0.5)#到圆心距离的纵坐标
+            l  = pow(lx,2) + pow(ly,2)
+            if l <= pow(r, 2):
+                pimb[i,j] = pima[i,j]
+    return imb
 
 
 app = Flask(__name__)

@@ -45,7 +45,7 @@
 			<point_rightbottom>89.3|83.8</point_rightbottom>
 			<align>center</align>
 			<precent>80</precent>
-			<geometry name="Quadrilateral">4</geometry>
+			<geometry name="Circle">CIRCLE</geometry>
 		</photo>
 	</layout>
 
@@ -89,7 +89,7 @@
 			<point_rightbottom>100|77</point_rightbottom>
 			<align>center</align>
 			<precent>100</precent>
-			<geometry name="Quadrilateral">4</geometry>
+			<geometry name="Quadrilateral">QUAD</geometry>
 		</photo>
 	</layout>
 
@@ -133,7 +133,7 @@
 			<point_rightbottom>95.2|61.6</point_rightbottom>
 			<align>left</align>
 			<precent>80</precent>
-			<geometry name="Quadrilateral">4</geometry>
+			<geometry name="Square">SQUARE</geometry>
 		</photo>
 	</layout>
 
@@ -177,7 +177,7 @@
 			<point_rightbottom>65.9|96.3</point_rightbottom>
 			<align>center</align>
 			<precent>90</precent>
-			<geometry name="Quadrilateral">4</geometry>
+			<geometry name="Rect">RECT</geometry>
 		</photo>
 	</layout>
 

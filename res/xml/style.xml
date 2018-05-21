@@ -6,23 +6,30 @@
         <!-- 对应约束空间模板IDs -->
         <layout_IDs>t00001|t00002|t00003</layout_IDs>
         <!-- 风格对应的颜色组合 -->
-        <color_group_IDs>clr001|clr002|clr003|clr004|clr005</color_group_IDs>
+        <color_group_IDs>R001|R002|R003|R004|R005</color_group_IDs>
         <!-- 可选择的字体集 -->
+        <font_family>wygdmc.otf|pf-zct.ttf|STZHONGS.TTF|ywsfxsjt.ttf</font_family>
+    </style>
+
+    <style name='炫酷科技' id='s03'>
+        <name>CoolTechnology</name>
+        <layout_IDs>t00001|t00002|t00003</layout_IDs>
+        <color_group_IDs>B001|B002|B003|B004|B005</color_group_IDs>
+        <font_family>mmjlx.TTF|pf-zct.ttf</font_family>
+    </style>
+
+    <style name='时尚简约' id='s04'>
+        <name>FashionSimplicity</name>
+        <layout_IDs>t00001|t00002|t00003</layout_IDs>
+        <color_group_IDs>F001|F002|F003|F004|F005</color_group_IDs>
         <font_family>wygdmc.otf|pf-zct.ttf|STZHONGS.TTF|ywsfxsjt.ttf</font_family>
     </style>
 
     <style name='商业周刊' id='s02'>
         <name>BusinessWeek</name>
         <layout_IDs>a00002|a00003|a00004|a00005</layout_IDs>
-        <color_group_IDs>clr011</color_group_IDs>
+        <color_group_IDs>clr001</color_group_IDs>
         <font_family>pf-zct.ttf</font_family>
-    </style>
-
-    <style name='炫酷科技' id='s03'>
-        <name>CoolTechnology</name>
-        <layout_IDs>t00001|t00002|t00003</layout_IDs>
-        <color_group_IDs>clr006|clr007|clr008|clr009|clr010</color_group_IDs>
-        <font_family>mmjlx.TTF|pf-zct.ttf</font_family>
     </style>
 
 </CATALOG>

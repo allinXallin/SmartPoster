@@ -2,71 +2,102 @@
 
 <CATALOG>
 
-  <color_group id="clr001">
-    <master>#A80B03</master>
-    <secondary>#FFE41F</secondary>  
-    <intersperse>#FAFAFA</intersperse>  
-  </color_group>
+    <color_group id="R001">
+        <master>#A80B03</master>
+        <secondary>#FFE41F</secondary>
+        <intersperse>#FAFAFA</intersperse>
+    </color_group>
 
-  <color_group id="clr002">
-    <master>#fffbcc</master>
-    <secondary>#CF1B1B</secondary>  
-    <intersperse>#900D0D</intersperse>  
-  </color_group>
+    <color_group id="R002">
+        <master>#fffbcc</master>
+        <secondary>#CF1B1B</secondary>
+        <intersperse>#900D0D</intersperse>
+    </color_group>
 
-  <color_group id="clr003">
-    <master>#CF0A2C</master>  
-    <secondary>#FFCE00</secondary>  
-    <intersperse>#FCFFD7</intersperse>  
-  </color_group>
+    <color_group id="R003">
+        <master>#CF0A2C</master>
+        <secondary>#FFCE00</secondary>
+        <intersperse>#FCFFD7</intersperse>
+    </color_group>
 
-  <color_group id="clr004">
-    <master>#D9343C</master>  
-    <secondary>#FDFBFC</secondary>  
-    <intersperse>#FFB521</intersperse>  
-  </color_group>
+    <color_group id="R004">
+        <master>#D9343C</master>
+        <secondary>#FDFBFC</secondary>
+        <intersperse>#FFB521</intersperse>
+    </color_group>
 
-  <color_group id="clr005">
-    <master>#F2F2F2</master>  
-    <secondary>#D2000A</secondary>  
-    <intersperse>#7D0000</intersperse>  
-  </color_group>
+    <color_group id="R005">
+        <master>#F2F2F2</master>
+        <secondary>#D2000A</secondary>
+        <intersperse>#7D0000</intersperse>
+    </color_group>
 
-  <color_group id="clr006">
-    <master>#181C28</master>
-    <secondary>#FFFFFF</secondary>
-    <intersperse>#FAFAFA</intersperse>
-  </color_group>
+    <color_group id="B001">
+        <master>#181C28</master>
+        <secondary>#FFFFFF</secondary>
+        <intersperse>#FAFAFA</intersperse>
+    </color_group>
 
-    <color_group id="clr007">
-    <master>#191919</master>
-    <secondary>#00CCBB</secondary>
-    <intersperse>#585858</intersperse>
-  </color_group>
+    <color_group id="B002">
+        <master>#191919</master>
+        <secondary>#00CCBB</secondary>
+        <intersperse>#585858</intersperse>
+    </color_group>
 
-    <color_group id="clr008">
-    <master>#181818</master>
-    <secondary>#F6D814</secondary>
-    <intersperse>#FCFCFC</intersperse>
-  </color_group>
+    <color_group id="B003">
+        <master>#181818</master>
+        <secondary>#F6D814</secondary>
+        <intersperse>#FCFCFC</intersperse>
+    </color_group>
 
-    <color_group id="clr009">
-    <master>#321E50</master>
-    <secondary>#FAF0F0</secondary>
-    <intersperse>#F0A064</intersperse>
-  </color_group>
+    <color_group id="B004">
+        <master>#321E50</master>
+        <secondary>#FAF0F0</secondary>
+        <intersperse>#F0A064</intersperse>
+    </color_group>
 
-    <color_group id="clr010">
-    <master>#000541</master>
-    <secondary>#0ABEBE</secondary>
-    <intersperse>#FAF0F0</intersperse>
-  </color_group>
+    <color_group id="B005">
+        <master>#000541</master>
+        <secondary>#0ABEBE</secondary>
+        <intersperse>#FAF0F0</intersperse>
+    </color_group>
 
-      <color_group id="clr011">
-    <master>#ffffff</master>
-    <secondary>#333333</secondary>
-    <intersperse>#333333</intersperse>
-  </color_group>
+    <!-- 商业周刊一个色彩组 -->
+    <color_group id="clr001">
+        <master>#ffffff</master>
+        <secondary>#333333</secondary>
+        <intersperse>#333333</intersperse>
+    </color_group>
+
+    <color_group id="F001">
+        <master>#E1D8C6</master>
+        <secondary>#453118</secondary>
+        <intersperse>#7b7c77</intersperse>
+    </color_group>
+
+    <color_group id="F002">
+        <master>#ebebeb</master>
+        <secondary>#ba7758</secondary>
+        <intersperse>#e3c3a6</intersperse>
+    </color_group>
+
+    <color_group id="F003">
+        <master>#f1eee4</master>
+        <secondary>#321825</secondary>
+        <intersperse>#635356</intersperse>
+    </color_group>
+
+    <color_group id="F004">
+        <master>#f1f1f1</master>
+        <secondary>#888d98</secondary>
+        <intersperse>#c4c8cd</intersperse>
+    </color_group>
+
+    <color_group id="F005">
+        <master>#a3d9eb</master>
+        <secondary>#2e1a3e</secondary>
+        <intersperse>#616b83</intersperse>
+    </color_group>
 
 
 </CATALOG>
