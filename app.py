@@ -296,7 +296,6 @@ def produce_posters(json_data):
     # 获取用户选择的风格类型，并在模板库中选择前N个模板进行制作
     style = Style()
     style.get_layout_id_by_style(task_info['style'])
-    print(style.layout_ids)
 
     # 根据布局ID从layout.xml文件中选择，并把模板约束信息保存到layouts中
     layouts = get_layouts_by_id(style.layout_ids)
@@ -368,7 +367,6 @@ def send_posters_info(posters_result):
     except Exception as e:
         # 若海报信息post传递失败，则将海报放到制作好的海报队列中
         #=======================================================
-
         print(str(e))
 
     # 使用requests发送POST请求。   一个http请求 = 请求行 + 请求报头 + 消息主体
@@ -624,9 +622,6 @@ def get_new_couple_index(len1, len2, couple):
 
 
 
-
-
-
 # 创建画布并开始绘制画报不同图层
 def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, path):
     psd_layers = {}  # 海报格式信息，psd图层树
@@ -652,13 +647,41 @@ def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, pat
     psd_layers['background'] = {}
     psd_layers['layers'] = []
 
+    bg_name = None
+    fg_name = None
+    color = None
+    # 由于背景和前景的选择会对色彩组有影响，因此如果可能的话根据选择的背景和前景重设颜色组
+    bg_name, fg_name, color = combine_bg_fg(style_layout.background,style_layout.foreground)
+    # ==================很尴尬，应设计师要求，前景和背景不能同时都有，两者选其一=============
+    if bg_name is not None and fg_name is not None:
+        k = random.randint(0,1)
+        if k == 0:
+            bg_name = None
+        else:
+            fg_name = None
+    #===================================================
+
+    # 若有新颜色，则覆盖
+    if color is not None:
+        #get_colors_by_id函数参数需要list类型
+        color_list = []
+        color_list.append(color)
+        style_color = get_colors_by_id(color_list)[0]
+    print(style_color)
+    
+
+
     # 不管怎样，先绘制单一底色
     img = Image.new("RGBA", (WIDTH, HEIGHT), str(style_color.master))
     # 若有预设背景图，则用预设背景图单一底色结合作为背景色
-    if style_layout.background is not None:
-        fgs = style_layout.background.strip().split('|')
-        index = random.randint(0, len(fgs)-1)
-        background = Image.open('res/background/' + fgs[index])
+    if bg_name is not None:
+        #========================================================
+        # bgs = style_layout.background.strip().split('|')
+        # index = random.randint(0, len(bgs)-1)
+        # background = Image.open('res/background/' + bgs[index])
+        #======================================================
+        background = Image.open(f'res/background/{bg_name}')
+
         # 绘制背景图到img上    注意：此时背景色跟图片的分辨率一样，可直接paste，后期可能不一样;
         #                          但可通过resize()函数进行处理
         background = background.resize((WIDTH, HEIGHT))
@@ -714,10 +737,13 @@ def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, pat
 
 
     # 若有预设【前景图】，则添加前景图
-    if style_layout.foreground is not None:
-        fgs = style_layout.foreground.strip().split('|')
-        index = random.randint(0, len(fgs)-1)
-        foreground = Image.open('res/foreground/' + fgs[index])
+    if fg_name is not None:
+        # ===========================================
+        # fgs = style_layout.foreground.strip().split('|')
+        # index = random.randint(0, len(fgs)-1)
+        # foreground = Image.open('res/foreground/' + fgs[index])
+        # ============================================
+        foreground = Image.open(f'res/foreground/{fg_name}')
         # 绘制前景图到img上    注意：此时前景色跟图片的分辨率一样，可直接paste，后期可能不一样;
         #                          但可通过resize()函数进行处理
         foreground = foreground.resize((WIDTH,HEIGHT))
@@ -1166,13 +1192,19 @@ def draw_img_in_rect(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
                 temp_photo = temp_photo.crop(box_crop)
                 box_resize = box
                 #print(temp_photo.mode)
-                img.paste(temp_photo, box_resize, mask=temp_photo)  # 在原始背景图的box_resize位置黏贴temp_photo
+                if temp_photo.mode == 'RGBA':
+                    img.paste(temp_photo, box_resize, mask=temp_photo) # 在原始背景图的box_resize位置黏贴temp_photo
+                else:
+                    img.paste(temp_photo, box_resize)
             else:  # 高度优先等比例缩放
                 temp_photo = photo.resize((int(w / h * box_h), box_h))  # 高度优先等比例缩放
                 box_crop = (int((int(w / h * box_h) - box_w) / 2), 0, int((int(w / h * box_h) - box_w) / 2) + box_w, box_h)
                 temp_photo = temp_photo.crop(box_crop)
                 box_resize = box
-                img.paste(temp_photo, box_resize, mask=temp_photo)
+                if temp_photo.mode == 'RGBA':
+                    img.paste(temp_photo, box_resize, mask=temp_photo)
+                else:
+                    img.paste(temp_photo, box_resize)
         else:  # 不允许裁剪，与允许裁剪的缩放方式刚好相反
             w, h = photo.size
             if w / h < (box[2] - box[0]) / (box[3] - box[1]):
@@ -1637,29 +1669,32 @@ def hex2rgb(hex):
 # 人脸检测
 def face_detect(photo):
     # 读取训练好的分类器，haarcascade_frontalface_default.xml存储在cv2包的data文件夹内
-    face_cascade = cv2.CascadeClassifier('res/haarcascade/haarcascade_frontalface_default.xml')
+    # face_cascade = cv2.CascadeClassifier('res/haarcascade/haarcascade_frontalface_default.xml') #效果不是很好
+    face_cascade = cv2.CascadeClassifier('res/haarcascade/haarcascade_frontalface_alt2.xml')
     # PIL.Image转换成opencv格式
     img = cv2.cvtColor(np.asarray(photo),cv2.COLOR_RGB2BGR)
     # 图像灰度化
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
     # 运用haar分类器扫描图像识别人脸。detectMultiScale函数中参数：
-    #       ① scaleFacter：人脸检测过程中每次迭代时压缩率；
-    #       ② minNeighbors：每个人脸矩形保留近邻数目的最小值
+    #       ① scaleFacter：人脸检测过程中每次迭代时压缩率；      默认为1.1
+    #       ② minNeighbors：每个人脸矩形保留近邻数目的最小值；    默认为3
     # 检测结果：返回人脸矩形数组
-    faces = face_cascade.detectMultiScale(gray,1.3,5)
+    faces = face_cascade.detectMultiScale(gray,1.1,3)
 
-    # # 其实这个for循环暂时没用，因为现阶段上传的单人脸
+    # # 其实这个for循环暂时没用，因为现阶段上传的单人脸====================================
     # for (x,y,w,h) in faces:
     #     img = cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
-    # cv2.namedWindow('adf',cv2.WINDOW_NORMAL)
-    # cv2.imshow('adf',img)d
+    # cv2.namedWindow('adf', cv2.WINDOW_NORMAL)
+    # cv2.imshow('adf', img)
     # cv2.waitKey(0)
+    # #=========================================================
 
     # opencv转换成PIL.Image格式
     photo = Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB))
 
-    if len(faces) >= 1:
+    # 只有一个人脸时，返回一张并进行居中处理，否则返回None，不进行人脸框中心约束处理
+    if len(faces) == 1:
         return faces[0]
     else:
         return None
@@ -1685,6 +1720,105 @@ def square2cricle(img):
             if l <= pow(r, 2):
                 pimb[i,j] = pima[i,j]
     return imb
+
+
+# 随机组合生成背景和前景的组合，但可能出现某一个或两个为None的情况
+def combine_bg_fg(bg_str, fg_str):
+    bg_list = []
+    fg_list = []
+    # 以字典列表存储背景及其对应的色彩组
+    if bg_str is not None:
+        bgs = bg_str.strip(';').split(';')
+        for item in bgs:
+            # bg第一元素为背景文件命名，后面的元素都是为色彩组名称
+            bg = item.strip().split('|')
+            bg_list.append(bg)
+    if fg_str is not None:
+        fgs = fg_str.strip(';').split(';')
+        for item in fgs:
+            # fg第一元素为前景文件命名，后面的元素都是为色彩组名称
+            fg = item.strip().split('|')
+            fg_list.append(fg)
+    bg=None
+    fg=None
+    #组合产生可能的色彩结果
+    if(len(bg_list) >= len(fg_list)):  # 背景图比前景图多
+        bg_temp = bg_list
+        for i in range(len(bg_temp)):
+            k1 = random.randint(0,len(bg_temp)-1)
+            bg = bg_temp[k1][0]
+            fg_temp = fg_list
+            for j in range(len(fg_temp)):
+                k2 = random.randint(0,len(fg_temp)-1)
+                fg = fg_temp[k2][0]
+                # 两个列表取交集,若有交集则return
+                colors = list(set(bg_temp[k1]).intersection(set(fg_temp[k2])))
+                # 若找到合适的匹配项，就返回
+                if len(colors)>0:
+                    index = random.randint(0,len(colors)-1)
+                    return bg,fg,colors[index]
+                fg_temp.remove(fg_temp[k2])
+        #特殊处理遍历了一遍还是找不到背景前景都匹配的色彩组，那就只取背景
+        k1 = random.randint(0, len(bg_list) - 1)
+        bg = bg_list[k1][0]
+        fg = None
+        color = bg_list[k1][random.randint(1,len(bg_list[k1])-1)]
+    else: # 背景图比前景图少
+        fg_temp = fg_list
+        for i in range(len(fg_temp)):
+            k1 = random.randint(0, len(fg_temp) - 1)
+            fg = fg_temp[k1][0]
+            bg_temp = bg_list
+            for j in range(len(bg_temp)):
+                k2 = random.randint(0, len(bg_temp) - 1)
+                bg = bg_temp[k2][0]
+                # 两个列表取交集,若有交集则return
+                colors = list(set(fg_temp[k1]).intersection(set(bg_temp[k2])))
+                # 若找到合适的匹配项，就返回
+                if len(colors) > 0:
+                    index = random.randint(0, len(colors) - 1)
+                    return bg, fg, colors[index]
+                bg_temp.remove(bg_temp[k2])
+        # 特殊处理遍历了一遍还是找不到背景前景都匹配的色彩组，那就只取背景
+        k1 = random.randint(0, len(fg_list) - 1)
+        bg = None
+        fg = fg_list[k1][0]
+        color = fg_list[k1][random.randint(1, len(fg_list[k1]) - 1)]
+    return bg,fg,color
+
+    # #上面函数里之前错误的做法
+    # if bg_str is not None:
+    #     bgs = bg_str.strip(';').splite(';')
+    #     for item in bgs:
+    #         bg = {}
+    #         item2list = item.strip().splite('|')
+    #         # 第一个为背景或前景文件命名，第二个为色彩组名称
+    #         bg[item2list[0]] = []
+    #         for i in range(1,len(item2list)):
+    #             bg[item2list[0]].append(item2list[i])
+    #         bg_list.append(bg)
+    # if fg_str is not None:
+    #     fgs = fg_str.strip(';').splite(';')
+    #     for item in fgs:
+    #         fg = {}
+    #         item2list = item.strip().splite('|')
+    #         # 第一个为背景或前景文件命名，第二个为色彩组名称
+    #         fg[item2list[0]] = []
+    #         for i in range(1, len(item2list)):
+    #             fg[item2list[0]].append(item2list[i])
+    #         fg_list.append(fg)
+
+
+# # 背景和前景两者选其一
+# def choose_one(bg_name, fg_name):
+#     if
+
+
+
+
+
+
+
 
 
 app = Flask(__name__)
@@ -1762,14 +1896,19 @@ if __name__ == '__main__':
 
 
 
-    #
+
     # # ====================================小测试模块===================================
-    # photo = Image.open('background/kuang.jpg')
-    # face_detect(photo)
-
-
-
-
+    # bg = None
+    # fg = 'fg006.png|R002|R003|'
+    # for i in range(20):
+    #     b, f, c = combine_bg_fg(bg, fg)
+    #     print(b)
+    #     print(f)
+    #     print(c)
+    #
+    #
+    # photo = Image.open('res/background/彩色.jpg')
+    # faces = face_detect(photo)
 
 
     # for fontsize in (style_layout.title.max_size, style_layout.title.min_size):

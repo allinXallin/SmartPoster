@@ -2,8 +2,9 @@
 
 <CATALOG>
 	<layout id="t00001">
-        <background>bg_cloud.png</background>
-		<foreground></foreground>
+        <!-- 每一个背景和前景都有与之适合的几个色彩组 -->
+        <background>bg001.png|R002|R004|R005;bg002.png|R001|R003|R004;bg003.png|R001|R002|R004|R005;bg004.png|R002|R003|R005;bg005.png|R001|R003|R005;bg006.png|R005</background>
+		<foreground>fg003.png|R002|R003|R005;fg005.png|R002|R003|R004|R005;fg006.png|R002|R003|R004|R005;fg007.png|R001|R002|R003|R004|R005</foreground>
 		<title space="h001">
 			<!--约束框左上角的坐标（相对值）-->
 			<point_lefttop>3|14.2</point_lefttop>
@@ -50,8 +51,8 @@
 	</layout>
 
 	<layout id="t00002">
-        <background>bg_cloud.png</background>
-		<foreground></foreground>
+        <background>bg003.png|R001|R002|R004|R005;bg004.png|R002|R003|R005;bg006.png|R005</background>
+		<foreground>fg003.png|R002|R003|R005;fg004.png|R001|R002|R004;fg006.png|R002|R003|R004|R005;fg007.png|R001|R002|R003|R004|R005</foreground>
 		<title space="h001">
 			<point_lefttop>6.7|14.2</point_lefttop>
 			<point_rightbottom>93.3|29.1</point_rightbottom>
@@ -94,8 +95,8 @@
 	</layout>
 
 	<layout id="t00003">
-        <background>bg_cloud.png</background>
-		<foreground></foreground>
+        <background>bg003.png|R001|R002|R004|R005;bg004.png|R002|R003|R005;bg005.png|R001|R003|R005;bg006.png|R005</background>
+		<foreground>fg005.png|R002|R003|R004|R005;fg006.png|R002|R003|R004|R005</foreground>
 		<title space="h001">
 			<point_lefttop>4.8|63.1</point_lefttop>
 			<point_rightbottom>95.2|77.9</point_rightbottom>
@@ -138,8 +139,8 @@
 	</layout>
 
 	<layout id="t00004">
-        <background>bg_cloud.png</background>
-		<foreground></foreground>
+        <background></background>
+		<foreground>fg001.png|R001|R003|R004;fg002.png|R001|R003|R004;fg006.png|R002|R003|R004|R005;fg007.png|R001|R002|R003|R004|R005;fg008.png|R001|R003|R004</foreground>
 		<title space="h001">
 			<point_lefttop>66.2|14.8</point_lefttop>
 			<point_rightbottom>81.9|74.2</point_rightbottom>

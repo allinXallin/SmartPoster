@@ -1,67 +1,151 @@
 import sys,random,os
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
 
-def draw_img_in_circle(url):
-    ima = Image.open(url).convert("RGBA")
-    size = ima.size
-    # 因为是要圆形，所以需要正方形的图片
-    r2 = min(size[0], size[1])
-    if size[0] != size[1]:
-        ima = ima.resize((r2, r2), Image.ANTIALIAS)
-    imb = Image.new('RGBA', (r2, r2),(255,255,255,0))
-    pima = ima.load()
-    pimb = imb.load()
-    r = float(r2/2) #圆心横坐标
-    for i in range(r2):
-        for j in range(r2):
-            lx = abs(i-r+0.5)#到圆心距离的横坐标
-            ly = abs(j-r+0.5)#到圆心距离的纵坐标
-            l  = pow(lx,2) + pow(ly,2)
-            if l <= pow(r, 2):
-                pimb[i,j] = pima[i,j]
-    imb.save("t1.png")
 
 
 
 
-def circle_corder_image(url):
-    im = Image.open(url).convert("RGBA")
-    rad = 500  # 设置半径
-    circle = Image.new('L', (rad * 2, rad * 2), 0)
-    draw = ImageDraw.Draw(circle)
-    draw.ellipse((0, 0, rad * 2, rad * 2), fill=255)
-    alpha = Image.new('L', im.size, 255)
-    w, h = im.size
-    alpha.paste(circle.crop((0, 0, rad, rad)), (0, 0))
-    alpha.paste(circle.crop((0, rad, rad, rad * 2)), (0, h-rad))
-    alpha.paste(circle.crop((rad, 0, rad * 2, rad)), (w - rad, 0))
-    alpha.paste(circle.crop((rad, rad, rad * 2, rad * 2)), (w - rad, h - rad))
-    im.putalpha(alpha)
-    im.save('t2.png')
 
 
 
-def circle_new(url):
-    ima = Image.open(url).convert("RGBA")
-    size = ima.size
-    r2 = min(size[0], size[1])
-    if size[0] != size[1]:
-        ima = ima.resize((r2, r2), Image.ANTIALIAS)
-    circle = Image.new('L', (r2, r2), (255,255,255,0))
-    imb = Image.new('RGBA', (r2, r2), (255, 255, 255, 0))
-    draw = ImageDraw.Draw(circle)
-    draw.ellipse((0, 0, r2, r2), fill=255)
-    alpha = Image.new('L', (r2, r2), 255)
-    alpha.paste(circle, (0, 0))
-    ima.putalpha(alpha)
-    ima.save('t3.png')
+# def combine_bg_fg(bg_str, fg_str):
+#     bg_list = []
+#     fg_list = []
+#     # 以字典列表存储背景及其对应的色彩组
+#     if bg_str is not None:
+#         bgs = bg_str.strip(';').splite(';')
+#         for item in bgs:
+#             # bg第一元素为背景文件命名，后面的元素都是为色彩组名称
+#             bg = item.strip().splite('|')
+#             bg_list.append(bg)
+#     if fg_str is not None:
+#         fgs = fg_str.strip(';').splite(';')
+#         for item in fgs:
+#             # fg第一元素为前景文件命名，后面的元素都是为色彩组名称
+#             fg = item.strip().splite('|')
+#             fg_list.append(fg)
+#     bg=None
+#     fg=None
+#     #组合产生可能的色彩结果
+#     if(len(bg_list) >= len(fg_list)):  # 背景图比前景图多
+#         bg_temp = bg_list
+#         for i in range(len(bg_temp)):
+#             k1 = random.randint(0,len(bg_temp)-1)
+#             bg = bg_temp[k1][0]
+#             fg_temp = fg_list
+#             for j in range(len(fg_temp)):
+#                 k2 = random.randint(0,len(fg_temp)-1)
+#                 fg = fg_temp[k2][0]
+#                 # 两个列表取交集,若有交集则return
+#                 colors = list(set(bg_temp[k1]).intersection(set(fg_temp[k2])))
+#                 # 若找到合适的匹配项，就返回
+#                 if len(colors)>0:
+#                     index = random.randint(0,len(colors)-1)
+#                     return bg,fg,colors[index]
+#                 fg_temp.remove(fg_temp[k2])
+#         #特殊处理遍历了一遍还是找不到背景前景都匹配的色彩组，那就只取背景
+#         k1 = random.randint(0, len(bg_list) - 1)
+#         bg = bg_list[k1][0]
+#         fg = None
+#         color = bg_list[k1][random.randint(1,len(bg_list[k1])-1)]
+#     else: # 背景图比前景图少
+#         fg_temp = fg_list
+#         for i in range(len(fg_temp)):
+#             k1 = random.randint(0, len(fg_temp) - 1)
+#             fg = fg_temp[k1][0]
+#             bg_temp = bg_list
+#             for j in range(len(bg_temp)):
+#                 k2 = random.randint(0, len(bg_temp) - 1)
+#                 bg = bg_temp[k2][0]
+#                 # 两个列表取交集,若有交集则return
+#                 colors = list(set(fg_temp[k1]).intersection(set(bg_temp[k2])))
+#                 # 若找到合适的匹配项，就返回
+#                 if len(colors) > 0:
+#                     index = random.randint(0, len(colors) - 1)
+#                     return bg, fg, colors[index]
+#                 bg_temp.remove(bg_temp[k2])
+#         # 特殊处理遍历了一遍还是找不到背景前景都匹配的色彩组，那就只取背景
+#         k1 = random.randint(0, len(fg_list) - 1)
+#         bg = None
+#         fg = fg_list[k1][0]
+#         color = fg_list[k1][random.randint(1, len(fg_list[k1]) - 1)]
+#     return bg,fg,color
+#
+#
+# bg="bg003.png|R001|R002|R004|R005;bg004.png|R002|R003|R005;bg006.png|R005"
+# fg="fg003.png|R002|R003|R005;fg005.png|R002|R003|R004|R005;fg006.png|R002|R003|R004|R005;fg007.png|R001|R002|R003|R004|R005"
+# for i in range(20):
+#     b,f,c = combine_bg_fg(bg,fg)
 
 
 
-if __name__ == '__main__':
-    draw_img_in_circle('测试图.png')
-    circle_corder_image('测试图.png')
-    circle_new('测试图.png')
+
+# def draw_img_in_circle(url):
+#     ima = Image.open(url).convert("RGBA")
+#     size = ima.size
+#     # 因为是要圆形，所以需要正方形的图片
+#     r2 = min(size[0], size[1])
+#     if size[0] != size[1]:
+#         ima = ima.resize((r2, r2), Image.ANTIALIAS)
+#     imb = Image.new('RGBA', (r2, r2),(255,255,255,0))
+#     pima = ima.load()
+#     pimb = imb.load()
+#     r = float(r2/2) #圆心横坐标
+#     for i in range(r2):
+#         for j in range(r2):
+#             lx = abs(i-r+0.5)#到圆心距离的横坐标
+#             ly = abs(j-r+0.5)#到圆心距离的纵坐标
+#             l  = pow(lx,2) + pow(ly,2)
+#             if l <= pow(r, 2):
+#                 pimb[i,j] = pima[i,j]
+#     imb.save("t1.png")
+#
+#
+#
+#
+# def circle_corder_image(url):
+#     im = Image.open(url).convert("RGBA")
+#     rad = 500  # 设置半径
+#     circle = Image.new('L', (rad * 2, rad * 2), 0)
+#     draw = ImageDraw.Draw(circle)
+#     draw.ellipse((0, 0, rad * 2, rad * 2), fill=255)
+#     alpha = Image.new('L', im.size, 255)
+#     w, h = im.size
+#     alpha.paste(circle.crop((0, 0, rad, rad)), (0, 0))
+#     alpha.paste(circle.crop((0, rad, rad, rad * 2)), (0, h-rad))
+#     alpha.paste(circle.crop((rad, 0, rad * 2, rad)), (w - rad, 0))
+#     alpha.paste(circle.crop((rad, rad, rad * 2, rad * 2)), (w - rad, h - rad))
+#     im.putalpha(alpha)
+#     im.save('t2.png')
+#
+#
+#
+# def circle_new(url):
+#     ima = Image.open(url).convert("RGBA")
+#     size = ima.size
+#     r2 = min(size[0], size[1])
+#     if size[0] != size[1]:
+#         ima = ima.resize((r2, r2), Image.ANTIALIAS)
+#     circle = Image.new('L', (r2, r2), (255,255,255,0))
+#     imb = Image.new('RGBA', (r2, r2), (255, 255, 255, 0))
+#     draw = ImageDraw.Draw(circle)
+#     draw.ellipse((0, 0, r2, r2), fill=255)
+#     alpha = Image.new('L', (r2, r2), 255)
+#     alpha.paste(circle, (0, 0))
+#     ima.putalpha(alpha)
+#     ima.save('t3.png')
+#
+#
+#
+# if __name__ == '__main__':
+#     draw_img_in_circle('测试图.png')
+#     circle_corder_image('测试图.png')
+#     circle_new('测试图.png')
+
+
+
+
+
 
 
 # from flask import Flask,request
