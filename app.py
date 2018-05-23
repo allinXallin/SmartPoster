@@ -811,14 +811,34 @@ def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, pat
     return psd_layers
 
 
-# 绘制文本信息（title、subtitle、content）至背景图片上，同时生成单独的图层返回；最后一个参数表示是否可换行
+
+
+
+
+
+# 绘制文本信息，根据宽高比判断是横着书写还是竖着书写
 def draw_title(img, psd_layers, text, constraint, color, font, multiline_or_not, path):
     # 根据长宽计算左上角和右下角的绝对位置
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(psd_layers['width'],
                                                                                        psd_layers['height'])
-    # 宽比高小时，那么强势转换成可以换行（即竖着写）
-    if right_bottom_x - left_top_x < right_bottom_y - left_top_y:
-        multiline_or_not = True
+    # 根据宽高比判断书写方式（横or竖）
+    if right_bottom_x - left_top_x > right_bottom_y - left_top_y:
+        title_png, psd_layers = draw_title_horizontal(img, psd_layers, text, constraint, color, font, multiline_or_not,
+                                                      path)
+    else:
+        # 高度大于宽度，竖着书写
+        title_png, psd_layers = draw_title_vertical(img, psd_layers, text, constraint, color, font, multiline_or_not,
+                                                    path)
+    return title_png,psd_layers
+
+
+
+
+# 绘制文本信息（title、subtitle、content）至背景图片上，同时生成单独的图层返回；最后一个参数表示是否可换行
+def draw_title_horizontal(img, psd_layers, text, constraint, color, font, multiline_or_not, path):
+    # 根据长宽计算左上角和右下角的绝对位置
+    left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(psd_layers['width'],
+                                                                                       psd_layers['height'])
     # 按比例缩放约束空间
     PERCENT_TEXT_SPACE = float(constraint.precent)/100
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = shrink_rect(left_top_x, left_top_y, right_bottom_x,
@@ -831,7 +851,6 @@ def draw_title(img, psd_layers, text, constraint, color, font, multiline_or_not,
     # 设置字体，若有特殊字体要求，则用特殊字体
     if constraint.font_family is not None:
         font = "font/webFonts/" + constraint.font_family
-        #print(font)
 
     # 设置颜色，若有特殊颜色要求，则用颜色字体
     if constraint.color is not None:
@@ -977,8 +996,186 @@ def draw_title(img, psd_layers, text, constraint, color, font, multiline_or_not,
     return layer_png, psd_layers
 
 
+
+# 绘制文本信息（title、subtitle、content）至背景图片上，同时生成单独的图层返回；最后一个参数表示是否可换行
+def draw_title_vertical(img, psd_layers, text, constraint, color, font, multiline_or_not, path):
+    # 根据长宽计算左上角和右下角的绝对位置
+    left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(psd_layers['width'],
+                                                                                       psd_layers['height'])
+    # 按比例缩放约束空间
+    PERCENT_TEXT_SPACE = float(constraint.precent)/100
+    left_top_x, left_top_y, right_bottom_x, right_bottom_y = shrink_rect(left_top_x, left_top_y, right_bottom_x,
+                                                                         right_bottom_y, PERCENT_TEXT_SPACE)
+    # 文字绘制的边界：left，top，width，height
+    box_in_box = ()
+    # 添加到json里面的字体尺寸
+    actual_size = 0
+
+    # 设置字体，若有特殊字体要求，则用特殊字体
+    if constraint.font_family is not None:
+        font = "font/webFonts/" + constraint.font_family
+
+    # 设置颜色，若有特殊颜色要求，则用颜色字体
+    if constraint.color is not None:
+        color = constraint.color
+
+    # 在主背景图img上和图层图img_layer上都进行绘制
+    draw_img = ImageDraw.Draw(img)
+    layer_png = Image.new(mode='RGBA', size=(right_bottom_x - left_top_x, right_bottom_y - left_top_y))
+    draw_layer = ImageDraw.Draw(layer_png)
+    if multiline_or_not is False:  # 标题和副标题不可换行
+        for now_size in range(int(constraint.max_size), int(constraint.min_size), -2):
+            ft = ImageFont.truetype(font, now_size)
+            w, h = ft.getsize(text[0])  # 一个字的宽高
+            # 由于相同字号的不同字体的长宽都有所不同，所以要先判断整个字符串的长宽，若超出约束空间则减小字号
+            if w < (right_bottom_x - left_top_x) and h*len(text) < (right_bottom_y - left_top_y):
+                # 将最适合的字体大小保存到actual_size，供生成json使用
+                actual_size = now_size
+                # 根据要求的对齐方式进行绘制，left、center、right
+                if constraint.align == "left":  # 文本左对齐
+                    for row in range(len(text)):  # 当前行号
+                        draw_img.text((left_top_x, left_top_y + row*h), text[row],fill=color, font=ft)
+                        draw_layer.text((0, row*h), text[row], fill=color, font=ft)
+                elif constraint.align == "center":  # 文本中间对齐
+                    print("竖写时，暂时只支持左对齐")
+                    for row in range(len(text)):  # 当前行号
+                        draw_img.text((left_top_x, left_top_y + row*h), text[row],fill=color, font=ft)
+                        draw_layer.text((0, row*h), text[row], fill=color, font=ft)
+                elif constraint.align == "right":  # 文本右对齐
+                    print("竖写时，暂时只支持左对齐 ")
+                    for row in range(len(text)):  # 当前行号
+                        draw_img.text((left_top_x, left_top_y + row*h), text[row],fill=color, font=ft)
+                        draw_layer.text((0, row*h), text[row], fill=color, font=ft)
+                else:  # 文本左下角对齐
+                    print("竖写时，暂时只支持左对齐 ")
+                    for row in range(len(text)):  # 当前行号
+                        draw_img.text((left_top_x, left_top_y + row*h), text[row],fill=color, font=ft)
+                        draw_layer.text((0, row*h), text[row], fill=color, font=ft)
+                break
+    else:  # content可换行
+        for now_size in range(int(constraint.max_size), int(constraint.min_size), -1):
+            ft = ImageFont.truetype(font, now_size)
+            w, h = ft.getsize(text)
+            # 内容文字可换行，若行数不超出约束空间，则可绘制，否则减小字号
+            if math.ceil(w / (right_bottom_x - left_top_x)) < int(
+                            (right_bottom_y - left_top_y) / h):  # math.ceil()上入整数函数
+                # 将最适合的字体大小保存到actual_size，供生成json使用
+                actual_size = now_size
+                # 根据要求的对齐方式进行绘制，left、center、right
+                if constraint.align == "left":  # 文本左对齐
+                    # 分割行
+                    text = text + " "  # 处理最后少一个字问题，方便
+                    start = 0
+                    end = len(text) - 1
+                    lines = []
+                    while start < end-1:
+                        for n in range(start, end + 1):
+                            try_w, try_h = ft.getsize(text[start:n])
+                            if try_w > right_bottom_x - left_top_x:  # 若是当前文本超过约束框宽度则跳出循环进入下一行
+                                break
+                        lines.append(text[start:n-1])
+                        start = n-1
+                    #最后一个字特别处理一下
+                    lines.append(text[end - 1])
+                    # 绘制行
+                    i = 0  # 当前行号
+                    for t in range(len(lines)):
+                        draw_img.text((left_top_x, left_top_y + i * h), lines[t], fill=color, font=ft)
+                        draw_layer.text((0, i * h), lines[t], fill=color, font=ft)
+                        i = i + 1
+                elif constraint.align == "center":  # 文本中间对齐
+                    # 暂时只支持左对齐，因为中心对齐和右对齐涉及到文本语义理解
+                    print("暂时只支持左对齐！并且处理方式跟左对齐一样")
+                    # 分割行
+                    text = text + " "  # 处理最后少一个字问题，方便
+                    start = 0
+                    end = len(text) - 1
+                    lines = []
+                    while start < end-1:
+                        for n in range(start, end + 1):
+                            try_w, try_h = ft.getsize(text[start:n])
+                            if try_w > right_bottom_x - left_top_x:  # 若是当前文本超过约束框宽度则跳出循环进入下一行
+                                break
+                        lines.append(text[start:n-1])  # 记得减1，把刚好放不进的去掉
+                        start = n-1
+                    # 最后一个字特别处理一下
+                    lines.append(text[end - 1])
+                    # 绘制行
+                    i = 0  # 当前行号
+                    for t in range(len(lines)):
+                        draw_img.text((left_top_x, left_top_y + i * h), lines[t], fill=color, font=ft)
+                        draw_layer.text((0, i * h), lines[t], fill=color, font=ft)
+                        i = i + 1
+                else:  # 文本右对齐
+                    # 暂是只支持左对齐，因为中心对齐和右对齐涉及到文本语义理解
+                    print("暂时只支持左对齐！并且处理方式跟左对齐一样")
+                    # 分割行
+                    text = text + " "  # 处理最后少一个字问题，方便
+                    start = 0
+                    end = len(text) - 1
+                    lines = []
+                    while start < end-1:
+                        for n in range(start, end + 1):
+                            try_w, try_h = ft.getsize(text[start:n])
+                            if try_w > right_bottom_x - left_top_x:  # 若是当前文本超过约束框宽度则跳出循环进入下一行
+                                break
+                        lines.append(text[start:n-1])# 记得减1，把刚好放不进的去掉
+                        start = n-1
+                    # 最后一个字特别处理一下
+                    lines.append(text[end - 1])
+                    # 绘制行
+                    i = 0  # 当前行号
+                    for t in range(len(lines)):
+                        draw_img.text((left_top_x, left_top_y + i * h), lines[t], fill=color, font=ft)
+                        draw_layer.text((0, i * h), lines[t], fill=color, font=ft)
+                        i = i + 1
+
+                # 可换行时，box_in_box比较好计算
+                box_in_box = (left_top_x, left_top_y, left_top_x+w, left_top_y+h)
+                break
+    # 制作类似json格式的图层信息，并添加到psd_layers中的'layers'列表中去
+    json_layer = {}
+    number = len(psd_layers['layers']) + 1  # 图层id
+    json_layer['number'] = number
+    json_layer['name'] = text
+
+    # json_layer['left'] = box_in_box[0]
+    # json_layer['top'] = box_in_box[1]
+    # json_layer['width'] = box_in_box[2] - box_in_box[0]
+    # json_layer['height'] = box_in_box[3] - box_in_box[1]
+    json_layer['left'] = left_top_x
+    json_layer['top'] = left_top_y
+    json_layer['width'] = right_bottom_x - left_top_x
+    json_layer['height'] = right_bottom_y - left_top_y
+    json_layer['opacity'] = 1
+    # 将制作好的文本图层添加进psd_layers的layers中去
+    psd_layers['layers'].append(json_layer)
+    return layer_png, psd_layers
+
+
+
+
 # 绘制文本信息（title、subtitle、content）至背景图片上，同时生成单独的图层返回；最后一个参数表示是否可换行
 def draw_text(img, psd_layers, text, constraint, color, font, multiline_or_not, path):
+    # 根据长宽计算左上角和右下角的绝对位置
+    left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(psd_layers['width'],
+                                                                                       psd_layers['height'])
+    # 根据宽高比判断书写方式（横or竖）
+    if right_bottom_x - left_top_x > right_bottom_y - left_top_y:
+        title_png, psd_layers = draw_text_horizontal(img, psd_layers, text, constraint, color, font, multiline_or_not,
+                                                      path)
+    else:
+        # 高度大于宽度，竖着书写
+        title_png, psd_layers = draw_text_vertical(img, psd_layers, text, constraint, color, font, multiline_or_not,
+                                                    path)
+    return title_png,psd_layers
+
+
+
+
+
+# 横着绘制文本信息
+def draw_text_horizontal(img, psd_layers, text, constraint, color, font, multiline_or_not, path):
     # 根据长宽计算左上角和右下角的绝对位置
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(psd_layers['width'],
                                                                                        psd_layers['height'])
@@ -1149,6 +1346,230 @@ def draw_text(img, psd_layers, text, constraint, color, font, multiline_or_not, 
     # 将制作好的文本图层添加进psd_layers的layers中去
     psd_layers['layers'].append(json_layer)
     return layer_png, psd_layers
+
+
+
+
+# 竖着绘制文本信息
+def draw_text_vertical(img, psd_layers, text, constraint, color, font, multiline_or_not, path):
+    # 根据长宽计算左上角和右下角的绝对位置
+    left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(psd_layers['width'],
+                                                                                       psd_layers['height'])
+    # 按比例缩放约束空间
+    PERCENT_TEXT_SPACE = float(constraint.precent)/100
+    left_top_x, left_top_y, right_bottom_x, right_bottom_y = shrink_rect(left_top_x, left_top_y, right_bottom_x,
+                                                                         right_bottom_y, PERCENT_TEXT_SPACE)
+    # 文字绘制的边界：left，top，width，height
+    box_in_box = ()
+    # 添加到json里面的字体尺寸
+    actual_size = 0
+
+    # 设置字体，若有特殊字体要求，则用特殊字体
+    if constraint.font_family is not None:
+        font = "font/webFonts/" + constraint.font_family
+        #print(font)
+
+    # 设置颜色，若有特殊颜色要求，则用颜色字体
+    if constraint.color is not None:
+        color = constraint.color
+
+    # 在主背景图img上和图层图img_layer上都进行绘制
+    draw_img = ImageDraw.Draw(img)
+    layer_png = Image.new(mode='RGBA', size=(right_bottom_x - left_top_x, right_bottom_y - left_top_y))
+    draw_layer = ImageDraw.Draw(layer_png)
+    if multiline_or_not is False:  # 标题和副标题不可换行
+        print('其实下面这段代码是不执行的，先注释掉！')
+        # for now_size in range(int(constraint.max_size), int(constraint.min_size), -2):
+        #     ft = ImageFont.truetype(font, now_size)
+        #     w, h = ft.getsize(text)
+        #     # 由于相同字号的不同字体的长宽都有所不同，所以要先判断整个字符串的长宽，若超出约束空间则减小字号
+        #     if w < (right_bottom_x - left_top_x) and h < (right_bottom_y - left_top_y):
+        #         # 将最适合的字体大小保存到actual_size，供生成json使用
+        #         actual_size = now_size
+        #         # 根据要求的对齐方式进行绘制，left、center、right
+        #         if constraint.align == "left":  # 文本左对齐
+        #             draw_img.text((left_top_x, left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2), text,
+        #                           fill=color, font=ft)
+        #             draw_layer.text((0, (right_bottom_y - left_top_y) / 2 - h / 2), text, fill=color, font=ft)
+        #             box_in_box = (left_top_x, left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2, left_top_x+w, h + left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2)
+        #         elif constraint.align == "center":  # 文本中间对齐
+        #             draw_img.text((left_top_x + (right_bottom_x - left_top_x) / 2 - w / 2,
+        #                            left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2), text, fill=color, font=ft)
+        #             draw_layer.text(
+        #                 ((right_bottom_x - left_top_x) / 2 - w / 2, (right_bottom_y - left_top_y) / 2 - h / 2), text,
+        #                 fill=color, font=ft)
+        #             box_in_box = (left_top_x + (right_bottom_x - left_top_x) / 2 - w / 2,
+        #                           left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2, w+left_top_x + (right_bottom_x - left_top_x) / 2 - w / 2, h+left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2)
+        #         elif constraint.align == "right":  # 文本右对齐
+        #             draw_img.text((right_bottom_x - w, left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2), text,
+        #                           fill=color, font=ft)
+        #             draw_layer.text((right_bottom_x - w - left_top_x, (right_bottom_y - left_top_y) / 2 - h / 2), text,
+        #                             fill=color, font=ft)
+        #             box_in_box = (right_bottom_x - w, left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2, right_bottom_x, h +left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2)
+        #         else:
+        #             draw_img.text((left_top_x, left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2), text,
+        #                           fill=color, font=ft)
+        #             draw_layer.text((0, (right_bottom_y - left_top_y) / 2 - h / 2), text, fill=color, font=ft)
+        #             box_in_box = (left_top_x, left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2, left_top_x + w,
+        #                           h + left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2)
+        #         break
+    else:  # content可换行
+        for now_size in range(int(constraint.max_size), int(constraint.min_size), -1):
+            ft = ImageFont.truetype(font, now_size)
+            w, h = ft.getsize(text[0])
+            # 内容文字可换列，若列数不超出约束空间，则可绘制，否则减小字号
+            if math.ceil(h*len(text) / (right_bottom_y - left_top_y)) < int(
+                            (right_bottom_x - left_top_x) / w):  # math.ceil()上入整数函数
+                # 将最适合的字体大小保存到actual_size，供生成json使用
+                actual_size = now_size
+                # 根据要求的对齐方式进行绘制，left、center、right
+                if constraint.align == "left":  # 文本左对齐
+                    start = 0
+                    end = len(text)-1
+                    lines = []
+                    while start < end:
+                        k = 1
+                        while k*h < right_bottom_y - left_top_y:
+                            k += 1
+                        lines.append(text[start:start+k])
+                        start = start+k
+                    # 注意：要先将文字列表转置
+                    max_row = 0
+                    for i in range(len(lines)):
+                        max_row = max(max_row,len(lines[i]))
+                    lines_T = []
+                    for i in range(max_row):
+                        line = []
+                        for j in range(len(lines)):
+                            line.append(' ')
+                        lines_T.append(line)
+                    #转置
+                    for i in range(len(lines)):
+                        for j in range(len(lines[i])):
+                            lines_T[j][i] = lines[i][j]
+                    # lines_T = list(map(list,zip(*lines_T)))  #不行，有点bug
+                    # 注意：将第二维字符列表合并成一个字符串
+                    for i in range(0, len(lines_T)):
+                        lines_T[i] = "".join(map(str, lines_T[i]))
+                    # 转置后按行绘制
+                    for t in range(len(lines_T)):
+                        draw_img.text((left_top_x, left_top_y + t * h), lines_T[t], fill=color, font=ft)
+                        draw_layer.text((0, t * h), lines_T[t], fill=color, font=ft)
+                elif constraint.align == "center":  # 文本中间对齐
+                    # 暂时只支持左对齐，因为中心对齐和右对齐涉及到文本语义理解
+                    print("竖着绘制文本，暂时只支持左对齐！")
+                    #========================代码通同left左对齐，之后要改===============
+                    start = 0
+                    end = len(text)-1
+                    lines = []
+                    while start < end:
+                        k = 1
+                        while k*h < right_bottom_y - left_top_y:
+                            k += 1
+                        lines.append(text[start:start+k])
+                        start = start+k
+                    # 注意：要先将文字列表转置
+                    max_row = 0
+                    for i in range(len(lines)):
+                        max_row = max(max_row,len(lines[i]))
+                    lines_T = []
+                    for i in range(max_row):
+                        line = []
+                        for j in range(len(lines)):
+                            line.append(' ')
+                        lines_T.append(line)
+                    #转置
+                    for i in range(len(lines)):
+                        for j in range(len(lines[i])):
+                            lines_T[j][i] = lines[i][j]
+                    # lines_T = list(map(list,zip(*lines_T)))  #不行，有点bug
+                    # 注意：将第二维字符列表合并成一个字符串
+                    for i in range(0, len(lines_T)):
+                        lines_T[i] = "".join(map(str, lines_T[i]))
+                    # 转置后按行绘制
+                    for t in range(len(lines_T)):
+                        draw_img.text((left_top_x, left_top_y + t * h), lines_T[t], fill=color, font=ft)
+                        draw_layer.text((0, t * h), lines_T[t], fill=color, font=ft)
+                    #==================================================================
+                else:  # 文本右对齐
+                    # 暂是只支持左对齐，因为中心对齐和右对齐涉及到文本语义理解
+                    print("竖着绘制文本，暂时只支持左对齐！")
+                    #========================代码通同left左对齐，之后要改===============
+                    start = 0
+                    end = len(text)-1
+                    lines = []
+                    while start < end:
+                        k = 1
+                        while k*h < right_bottom_y - left_top_y:
+                            k += 1
+                        lines.append(text[start:start+k])
+                        start = start+k
+                    # 注意：要先将文字列表转置
+                    max_row = 0
+                    for i in range(len(lines)):
+                        max_row = max(max_row,len(lines[i]))
+                    lines_T = []
+                    for i in range(max_row):
+                        line = []
+                        for j in range(len(lines)):
+                            line.append(' ')
+                        lines_T.append(line)
+                    #转置
+                    for i in range(len(lines)):
+                        for j in range(len(lines[i])):
+                            lines_T[j][i] = lines[i][j]
+                    # lines_T = list(map(list,zip(*lines_T)))  #不行，有点bug
+                    # 注意：将第二维字符列表合并成一个字符串
+                    for i in range(0, len(lines_T)):
+                        lines_T[i] = "".join(map(str, lines_T[i]))
+                    # 转置后按行绘制
+                    for t in range(len(lines_T)):
+                        draw_img.text((left_top_x, left_top_y + t * h), lines_T[t], fill=color, font=ft)
+                        draw_layer.text((0, t * h), lines_T[t], fill=color, font=ft)
+                    #==================================================================
+                # 可换行时，box_in_box比较好计算
+                box_in_box = (left_top_x, left_top_y, left_top_x+w, left_top_y+h)
+                break
+    # 制作类似json格式的图层信息，并添加到psd_layers中的'layers'列表中去
+    json_layer = {}
+    number = len(psd_layers['layers']) + 1  # 图层id
+    json_layer['number'] = number
+    json_layer['name'] = text
+    json_layer['left'] = box_in_box[0]
+    json_layer['top'] = box_in_box[1]
+    json_layer['width'] = box_in_box[2] - box_in_box[0]
+    json_layer['height'] = box_in_box[3] - box_in_box[1]
+    json_layer['opacity'] = 1
+    json_layer_text = {}
+    json_layer_text['value'] = text
+    json_layer_text_font = {}
+    json_layer_text_font["name"] = font  # font文字地址path
+    json_layer_text_font['sizes'] = [actual_size, actual_size]
+    r, g, b = hex2rgb(color)
+    json_layer_text_font['colors'] = [[r, g, b, 255], [r, g, b, 255]]  # 最后一个255是透明度
+    json_layer_text_font['alignment'] = "left"
+    json_layer_text['font'] = json_layer_text_font
+    json_layer_text['left'] = 0
+    json_layer_text['top'] = 0
+    json_layer_text['right'] = 0
+    json_layer_text['bottom'] = 0
+    json_layer_text_transform = {}
+    json_layer_text_transform['xx'] = 1
+    json_layer_text_transform['xy'] = 0
+    json_layer_text_transform['yx'] = 0
+    json_layer_text_transform['yy'] = 1
+    json_layer_text_transform['tx'] = box_in_box[0]
+    json_layer_text_transform['ty'] = box_in_box[1]
+    json_layer_text['transform'] = json_layer_text_transform
+    json_layer['text'] = json_layer_text
+    # 将制作好的文本图层添加进psd_layers的layers中去
+    psd_layers['layers'].append(json_layer)
+    return layer_png, psd_layers
+
+
+
+
+
 
 
 # 绘制图片信息（logo、photo）至背景图片上，同时生成单独的图层返回
@@ -2119,6 +2540,13 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5050, debug=True,threaded = True)
     # 如果服务开启成功，则通知后端服务
     # response = requests.get()
+
+
+
+    # a=[[1,2,3],[2,3,4]]
+    # print(len(a))
+    # print(len(a[0]))
+
 
 
 
