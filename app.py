@@ -816,6 +816,9 @@ def draw_title(img, psd_layers, text, constraint, color, font, multiline_or_not,
     # 根据长宽计算左上角和右下角的绝对位置
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(psd_layers['width'],
                                                                                        psd_layers['height'])
+    # 宽比高小时，那么强势转换成可以换行（即竖着写）
+    if right_bottom_x - left_top_x < right_bottom_y - left_top_y:
+        multiline_or_not = True
     # 按比例缩放约束空间
     PERCENT_TEXT_SPACE = float(constraint.precent)/100
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = shrink_rect(left_top_x, left_top_y, right_bottom_x,
@@ -889,13 +892,15 @@ def draw_title(img, psd_layers, text, constraint, color, font, multiline_or_not,
                     start = 0
                     end = len(text) - 1
                     lines = []
-                    while start < end:
+                    while start < end-1:
                         for n in range(start, end + 1):
                             try_w, try_h = ft.getsize(text[start:n])
                             if try_w > right_bottom_x - left_top_x:  # 若是当前文本超过约束框宽度则跳出循环进入下一行
                                 break
-                        lines.append(text[start:n])
-                        start = n
+                        lines.append(text[start:n-1])
+                        start = n-1
+                    #最后一个字特别处理一下
+                    lines.append(text[end - 1])
                     # 绘制行
                     i = 0  # 当前行号
                     for t in range(len(lines)):
@@ -904,10 +909,50 @@ def draw_title(img, psd_layers, text, constraint, color, font, multiline_or_not,
                         i = i + 1
                 elif constraint.align == "center":  # 文本中间对齐
                     # 暂时只支持左对齐，因为中心对齐和右对齐涉及到文本语义理解
-                    print("暂时只支持左对齐！")
+                    print("暂时只支持左对齐！并且处理方式跟左对齐一样")
+                    # 分割行
+                    text = text + " "  # 处理最后少一个字问题，方便
+                    start = 0
+                    end = len(text) - 1
+                    lines = []
+                    while start < end-1:
+                        for n in range(start, end + 1):
+                            try_w, try_h = ft.getsize(text[start:n])
+                            if try_w > right_bottom_x - left_top_x:  # 若是当前文本超过约束框宽度则跳出循环进入下一行
+                                break
+                        lines.append(text[start:n-1])  # 记得减1，把刚好放不进的去掉
+                        start = n-1
+                    # 最后一个字特别处理一下
+                    lines.append(text[end - 1])
+                    # 绘制行
+                    i = 0  # 当前行号
+                    for t in range(len(lines)):
+                        draw_img.text((left_top_x, left_top_y + i * h), lines[t], fill=color, font=ft)
+                        draw_layer.text((0, i * h), lines[t], fill=color, font=ft)
+                        i = i + 1
                 else:  # 文本右对齐
                     # 暂是只支持左对齐，因为中心对齐和右对齐涉及到文本语义理解
-                    print("暂时只支持左对齐！")
+                    print("暂时只支持左对齐！并且处理方式跟左对齐一样")
+                    # 分割行
+                    text = text + " "  # 处理最后少一个字问题，方便
+                    start = 0
+                    end = len(text) - 1
+                    lines = []
+                    while start < end-1:
+                        for n in range(start, end + 1):
+                            try_w, try_h = ft.getsize(text[start:n])
+                            if try_w > right_bottom_x - left_top_x:  # 若是当前文本超过约束框宽度则跳出循环进入下一行
+                                break
+                        lines.append(text[start:n-1])# 记得减1，把刚好放不进的去掉
+                        start = n-1
+                    # 最后一个字特别处理一下
+                    lines.append(text[end - 1])
+                    # 绘制行
+                    i = 0  # 当前行号
+                    for t in range(len(lines)):
+                        draw_img.text((left_top_x, left_top_y + i * h), lines[t], fill=color, font=ft)
+                        draw_layer.text((0, i * h), lines[t], fill=color, font=ft)
+                        i = i + 1
 
                 # 可换行时，box_in_box比较好计算
                 box_in_box = (left_top_x, left_top_y, left_top_x+w, left_top_y+h)
@@ -1920,49 +1965,52 @@ def combine_bg_fg(bg_str, fg_str):
             fg_list.append(fg)
     bg=None
     fg=None
+    color = None
     #组合产生可能的色彩结果
-    if(len(bg_list) >= len(fg_list)):  # 背景图比前景图多
-        bg_temp = bg_list
-        for i in range(len(bg_temp)):
-            k1 = random.randint(0,len(bg_temp)-1)
-            bg = bg_temp[k1][0]
-            fg_temp = fg_list
-            for j in range(len(fg_temp)):
-                k2 = random.randint(0,len(fg_temp)-1)
-                fg = fg_temp[k2][0]
-                # 两个列表取交集,若有交集则return
-                colors = list(set(bg_temp[k1]).intersection(set(fg_temp[k2])))
-                # 若找到合适的匹配项，就返回
-                if len(colors)>0:
-                    index = random.randint(0,len(colors)-1)
-                    return bg,fg,colors[index]
-                fg_temp.remove(fg_temp[k2])
-        #特殊处理遍历了一遍还是找不到背景前景都匹配的色彩组，那就只取背景
-        k1 = random.randint(0, len(bg_list) - 1)
-        bg = bg_list[k1][0]
-        fg = None
-        color = bg_list[k1][random.randint(1,len(bg_list[k1])-1)]
-    else: # 背景图比前景图少
-        fg_temp = fg_list
-        for i in range(len(fg_temp)):
-            k1 = random.randint(0, len(fg_temp) - 1)
-            fg = fg_temp[k1][0]
+    if len(bg_list) >= len(fg_list):  # 背景图比前景图多
+        if len(bg_list)>0:
             bg_temp = bg_list
-            for j in range(len(bg_temp)):
-                k2 = random.randint(0, len(bg_temp) - 1)
-                bg = bg_temp[k2][0]
-                # 两个列表取交集,若有交集则return
-                colors = list(set(fg_temp[k1]).intersection(set(bg_temp[k2])))
-                # 若找到合适的匹配项，就返回
-                if len(colors) > 0:
-                    index = random.randint(0, len(colors) - 1)
-                    return bg, fg, colors[index]
-                bg_temp.remove(bg_temp[k2])
-        # 特殊处理遍历了一遍还是找不到背景前景都匹配的色彩组，那就只取背景
-        k1 = random.randint(0, len(fg_list) - 1)
-        bg = None
-        fg = fg_list[k1][0]
-        color = fg_list[k1][random.randint(1, len(fg_list[k1]) - 1)]
+            for i in range(len(bg_temp)):
+                k1 = random.randint(0,len(bg_temp)-1)
+                bg = bg_temp[k1][0]
+                fg_temp = fg_list
+                for j in range(len(fg_temp)):
+                    k2 = random.randint(0,len(fg_temp)-1)
+                    fg = fg_temp[k2][0]
+                    # 两个列表取交集,若有交集则return
+                    colors = list(set(bg_temp[k1]).intersection(set(fg_temp[k2])))
+                    # 若找到合适的匹配项，就返回
+                    if len(colors)>0:
+                        index = random.randint(0,len(colors)-1)
+                        return bg,fg,colors[index]
+                    fg_temp.remove(fg_temp[k2])
+            #特殊处理遍历了一遍还是找不到背景前景都匹配的色彩组，那就只取背景
+            k1 = random.randint(0, len(bg_list) - 1)
+            bg = bg_list[k1][0]
+            fg = None
+            color = bg_list[k1][random.randint(1,len(bg_list[k1])-1)]
+    else:  # 背景图比前景图少
+        if len(fg_list)>0:
+            fg_temp = fg_list
+            for i in range(len(fg_temp)):
+                k1 = random.randint(0, len(fg_temp) - 1)
+                fg = fg_temp[k1][0]
+                bg_temp = bg_list
+                for j in range(len(bg_temp)):
+                    k2 = random.randint(0, len(bg_temp) - 1)
+                    bg = bg_temp[k2][0]
+                    # 两个列表取交集,若有交集则return
+                    colors = list(set(fg_temp[k1]).intersection(set(bg_temp[k2])))
+                    # 若找到合适的匹配项，就返回
+                    if len(colors) > 0:
+                        index = random.randint(0, len(colors) - 1)
+                        return bg, fg, colors[index]
+                    bg_temp.remove(bg_temp[k2])
+            # 特殊处理遍历了一遍还是找不到背景前景都匹配的色彩组，那就只取背景
+            k1 = random.randint(0, len(fg_list) - 1)
+            bg = None
+            fg = fg_list[k1][0]
+            color = fg_list[k1][random.randint(1, len(fg_list[k1]) - 1)]
     return bg,fg,color
 
     # #上面函数里之前错误的做法
@@ -2084,9 +2132,9 @@ if __name__ == '__main__':
     #     print(b)
     #     print(f)
     #     print(c)
-    #
-    #
-    # photo = Image.open('res/background/彩色.jpg')
+    # #
+    # #
+    # photo = Image.open('res/background/333.jpg')
     # faces = face_detect(photo)
 
 
