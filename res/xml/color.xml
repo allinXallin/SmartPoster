@@ -2,6 +2,7 @@
 
 <CATALOG>
 
+    <!-- 红色喜庆色彩组 -->
     <color_group id="R001">
         <master>#A80B03</master>
         <secondary>#FFE41F</secondary>
@@ -32,6 +33,7 @@
         <intersperse>#7D0000</intersperse>
     </color_group>
 
+    <!-- 炫酷黑色色彩组 -->
     <color_group id="B001">
         <master>#181C28</master>
         <secondary>#FFFFFF</secondary>
@@ -69,6 +71,7 @@
         <intersperse>#333333</intersperse>
     </color_group>
 
+    <!-- 时尚简约色彩组 -->
     <color_group id="F001">
         <master>#E1D8C6</master>
         <secondary>#453118</secondary>
@@ -97,6 +100,44 @@
         <master>#a3d9eb</master>
         <secondary>#2e1a3e</secondary>
         <intersperse>#616b83</intersperse>
+    </color_group>
+
+
+    <!-- 星梦邮轮色彩组 -->
+    <color_group id="S001">
+        <master>#ddf1fd</master>
+        <secondary>#543787</secondary>
+        <intersperse>#a06eb0</intersperse>
+    </color_group>
+
+    <color_group id="S002">
+        <master>#ffffff</master>
+        <secondary>#002962</secondary>
+        <intersperse>#82a0c8</intersperse>
+    </color_group>
+
+    <color_group id="S003">
+        <master>#dcffff</master>
+        <secondary>#e6720e</secondary>
+        <intersperse>#52354c</intersperse>
+    </color_group>
+
+    <color_group id="S004">
+        <master>#ecefec</master>
+        <secondary>#483f3b</secondary>
+        <intersperse>#74abab</intersperse>
+    </color_group>
+
+    <color_group id="S005">
+        <master>#A6D0D9</master>
+        <secondary>#303A58</secondary>
+        <intersperse>#FFFFFF</intersperse>
+    </color_group>
+
+    <color_group id="S006">
+        <master>#3263BB</master>
+        <secondary>#E1E0DC</secondary>
+        <intersperse>#79C7DF</intersperse>
     </color_group>
 
 

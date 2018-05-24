@@ -4,7 +4,7 @@
     <style name='红色喜庆' id='s01'>
         <name>RedFestive</name>
         <!-- 对应约束空间模板IDs -->
-        <layout_IDs>t00004</layout_IDs>
+        <layout_IDs>t00001|t00002|t00003|t00004</layout_IDs>
         <!-- 风格对应的颜色组合 -->
         <color_group_IDs>R001|R002|R003|R004|R005</color_group_IDs>
         <!-- 可选择的字体集 -->
@@ -29,6 +29,13 @@
         <name>BusinessWeek</name>
         <layout_IDs>a00002|a00003|a00004|a00005</layout_IDs>
         <color_group_IDs>clr001</color_group_IDs>
+        <font_family>pf-zct.ttf</font_family>
+    </style>
+
+    <style name='星梦邮轮' id='s02'>
+        <name>StarCruise</name>
+        <layout_IDs>f00002|f00003|ft00001|ft00004</layout_IDs>
+        <color_group_IDs>S001|S002|S003|S004|S005|S006</color_group_IDs>
         <font_family>pf-zct.ttf</font_family>
     </style>
 

@@ -1,8 +1,48 @@
-import sys,random,os
+import sys,random,os,requests,json,time,threading
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
 
+'''
+class MyThread(threading.Thread):
+
+    def __init__(self, task):
+        threading.Thread.__init__(self)
+        self.task = task
+
+    def run(self):
+        for k in range(200):
+            # 模拟压力测试
+            # 制作好海报后，以POST方式发送数据回后端
+            URL = 'http://120.78.10.209:5050/smartposter'
+            post_data = {}
+            post_data['user_id'] = 6
+            post_data['taskid'] = self.task
+            post_data['style_name'] = "星梦邮轮"
+            post_data['title'] = "喂车·喂来制造屌不"
+            post_data['subtitle'] = "@未来有你掌控@  屌不屌屌不屌不屌不"
+            post_data['content'] = "屌屌屌，不屌也屌；可视化编辑,零代码生成App新版本,即时更新无需审核,全生命周期定性用户反馈"
+            post_data[
+                'logo'] = "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1526366762&di=36509ed9c2a16aac2a7448e2f24938e9&src=http://www.lgstatic.com/i/image/M00/1F/C4/CgqKkVcMclCAIJueAAIOWpY5boU189.jpg"
+            post_data['photo'] = "res/background/彩色.jpg"
+            try:
+                data = json.dumps(post_data)
+                response = requests.post(URL, data=data)
+                print(response.text)
+            except Exception as e:
+                print(str(e))
 
 
+if __name__ == '__main__':
+    print('start main threading')
+    # 创建200个线程
+    threads = [MyThread(i) for i in range(1,200)]
+    # 启动200个线程
+    for t in threads:
+        t.start()
+        time.sleep(1)
+
+    print('End Main Threading')
+
+'''
 
 
 

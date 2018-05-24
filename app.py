@@ -50,7 +50,8 @@ class Layout:
     # 静态字段tmpl_count，用来统计使用的模板总数
     tmpl_count = 0
 
-    def __init__(self, background,foreground,title, sub_title, content, logo, photo):
+    def __init__(self, name,background,foreground,title, sub_title, content, logo, photo):
+        self.name = name
         self.background = background
         self.foreground = foreground
         self.title = title
@@ -324,14 +325,16 @@ def produce_posters(json_data):
         posters_result[path + "/p_" + str(num) +"/p_"+str(num)+".txt"] = poster
         #poster = json.dumps(poster, ensure_ascii=False)
 
+
+    # for i in range(10):
     # ======每个任务默认都需要给用户推荐一个利用我们自己图像库生成的海报；因此上面的循环实际上产生了（RECOMMEND_NUM-1）个海报
     # 随机从style_layouts、style_colors两个列表中抽取一对布局和色彩组合，但保证不能和之前的产生重复
     i, j = get_new_couple_index(len(layouts) - 1, len(style_colors) - 1, couple)
     z = random.randint(0, len(style.font_familys) - 1)
     # 最后一张的photo必须是设计师提供的图像库，但若图像库无图，则还是用用户上传的photo
     if len(os.listdir("res/photo_def/" + style.name)) > 0:  # 图像库中推荐照片个数大于0
-        photos = os.listdir("res/photo_def/" + style.name)
-        task_info["photo"] = f'res/photo_def/{style.name}/{photos[random.randint(0, len(photos)-1)]}'  # 从图像库中随机选一张图片
+        photos = os.listdir(f"res/photo_def/{style.name}/{layouts[i].name}/")
+        task_info["photo"] = f'res/photo_def/{style.name}/{layouts[i].name}/{photos[random.randint(0, len(photos)-1)]}'  # 从图像库中随机选一张图片
     poster = draw_a_poster(task_info, style.name, layouts[i], style_colors[j], style.font_familys[z], path,False) # False设计师提供的图像不允许裁剪
     num = len([x for x in os.listdir(path)])
     posters_result[path + "/p_" + str(num) +"/p_"+str(num)+".txt"] = poster
@@ -406,22 +409,13 @@ def send_posters_info(posters_result):
 #         post_data['preview_url_' + str(k)] = pre_imgurl + value['name']
 #
 #         files['psdinfo_' + str(k)] = open(key, 'rb')
-#         k=k+1
+#         k = k+1
 #     print(post_data)
 #     try:
-#         response = requests.post(URL,post_data,files=files)
-#         #print(response.text)
+#         response = requests.post(URL, post_data, files=files)
+#         # print(response.text)
 #     except Exception as e:
 #         print(str(e))
-
-
-
-
-
-
-
-
-
 
 
 
@@ -459,6 +453,8 @@ def get_layouts_by_id(layout_ids):
         for each_layout in layouts:
             if each_layout.get('id') == index:
                 for child in each_layout.getchildren():
+                    if child.tag == "name":
+                        name = child.text
                     if child.tag == "background":
                         background = child.text
                     if child.tag == "foreground":
@@ -480,7 +476,7 @@ def get_layouts_by_id(layout_ids):
                             child)
                         photo = Photo(left_top, right_bottom, right_top, left_bottom, align, precent, geometry,face_lefttop,face_rightbottom)
                 # 生成一个模板实例，并添加到模板列表中
-                tmpl_impl = Layout(background,foreground, title, sub_title, content, logo, photo)
+                tmpl_impl = Layout(name, background,foreground, title, sub_title, content, logo, photo)
                 style_layouts.append(tmpl_impl)
     return style_layouts
 
@@ -638,7 +634,7 @@ def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, pat
     # WIDTH = 828
     # HEIGHT = 1348
     WIDTH = 750
-    HEIGHT = 1220
+    HEIGHT = 1334
     # 在海报json里面添加宽高信息
     psd_layers['width'] = WIDTH
     psd_layers['height'] = HEIGHT
@@ -723,8 +719,8 @@ def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, pat
     # 如果用户没上传photo，则采用设计者提供的美图（以风格为单位提供）
     # 绘制photo   注：若photo为空，则使用设计师默认提供的美图    注：参数shape表示photo容器的形状：Q-四边形 T-三角形 C-圆形
     if userInfoDict["photo"] is None:
-        photos = os.listdir("res/photo_def/"+style_name)
-        photo_url =f'res/photo_def/{style_name}/{photos[random.randint(0, len(photos)-1)]}'
+        photos = os.listdir(f"res/photo_def/{style_name}/{style_layout.name}/")
+        photo_url =f'res/photo_def/{style_name}/{style_layout.name}/{photos[random.randint(0, len(photos)-1)]}'
     else:
         photo_url = userInfoDict["photo"]
     photo_png, psd_layers = draw_photo(img, psd_layers, photo_url, style_layout.photo, WIDTH, HEIGHT, mode)  # 第七个参数False：推荐的美图不允许裁剪
@@ -1267,8 +1263,7 @@ def draw_text_horizontal(img, psd_layers, text, constraint, color, font, multili
                         i = i + 1
                 elif constraint.align == "center":  # 文本中间对齐
                     # 暂时只支持左对齐，因为中心对齐和右对齐涉及到文本语义理解
-                    print("暂时只支持左对齐！")
-                    #========================代码通同left左对齐，之后要改===============
+                    print("已经支持中心对齐！")
                     text = text + " "
                     start = 0
                     end = len(text) - 1
@@ -1281,15 +1276,17 @@ def draw_text_horizontal(img, psd_layers, text, constraint, color, font, multili
                         lines.append(text[start:n])
                         start = n
                     i = 0
-                    for t in range(len(lines)):
+                    for t in range(len(lines)-1):  # 前n-1行直接从左到右绘制，最后一行之后单独处理
                         draw_img.text((left_top_x, left_top_y + i * h), lines[t], fill=color, font=ft)
                         draw_layer.text((0, i * h), lines[t], fill=color, font=ft)
                         i = i + 1
-                    #==================================================================
+                    # 最后一行中心对齐绘制
+                    last_w,last_h = ft.getsize(lines[-1])
+                    draw_img.text((left_top_x + (right_bottom_x - left_top_x) / 2 - last_w / 2,left_top_y + i*last_h), lines[-1], fill=color, font = ft)
+                    draw_layer.text(((right_bottom_x - left_top_x) / 2 - last_w / 2, i*last_h), text,fill=color, font=ft)
                 else:  # 文本右对齐
                     # 暂是只支持左对齐，因为中心对齐和右对齐涉及到文本语义理解
-                    print("暂时只支持左对齐！")
-                    #========================代码通同left左对齐，之后要改===============
+                    print("可以支持右对齐了！")
                     text = text + " "
                     start = 0
                     end = len(text) - 1
@@ -1306,8 +1303,10 @@ def draw_text_horizontal(img, psd_layers, text, constraint, color, font, multili
                         draw_img.text((left_top_x, left_top_y + i * h), lines[t], fill=color, font=ft)
                         draw_layer.text((0, i * h), lines[t], fill=color, font=ft)
                         i = i + 1
-                    #==================================================================
-
+                    # 最后一行中心对齐绘制
+                    last_w, last_h = ft.getsize(lines[-1])
+                    draw_img.text((right_bottom_x - last_w , left_top_y + i * last_h), lines[-1], fill=color, font=ft)
+                    draw_layer.text((right_bottom_x - last_w - left_top_x, i * last_h), text, fill=color,font=ft)
                 # 可换行时，box_in_box比较好计算
                 box_in_box = (left_top_x, left_top_y, left_top_x+w, left_top_y+h)
                 break
@@ -1609,17 +1608,18 @@ def draw_img_in_rect(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
         photo = Image.open(BytesIO(response.content))
         #photo = photo.convert('RGBA')
     except Exception as e:  # 网络地址获取失败的话获取本地图片
-        photo = Image.open(url)
+        print(str(e))
+        photo = Image.open(url).convert("RGBA")
 
     #判断是否有人脸，或者感兴趣区域ROI，并将ROI移动到布局显著性区域
     face_location = face_detect(photo)
-    if face_location is not None:  # 有人脸
+    if face_location is not None and constraint.face_lefttop is not None:  # 有人脸，·且有提供约束框，则将人脸放入框中
         # 根据长宽计算人脸放置位置的左上角和右下角的绝对位置
         LT_face_x, LT_face_y, RB_face_x, RB_face_y = constraint.get_face_space(WIDTH, HEIGHT)
         # 分别计算：①上传照片中检测到的真实人脸的中心位置；②约束框中人脸放置位置的中心点
         face_from_center_x = int(face_location[0] + face_location[2] / 2)
         face_from_center_y = int(face_location[1] + face_location[3] / 2)
-        face_to_center_x = int((LT_face_x + RB_face_x)/2)
+        face_to_center_x = int((LT_face_x + RB_face_x) / 2)
         face_to_center_y = int((LT_face_y + RB_face_y) / 2)
         # 分别计算：①源图中人脸宽高；②粘贴目标图中人脸约束空间的宽高
         face_from_W = face_location[2]
@@ -1627,22 +1627,56 @@ def draw_img_in_rect(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
         face_to_W = RB_face_x - LT_face_x
         face_to_H = RB_face_y - LT_face_y
 
-        if face_from_W/face_from_H > face_to_W/face_to_H :
+        if face_from_W / face_from_H > face_to_W / face_to_H:  # 模板人脸区宽小于高
             # 计算from图中左上角的横纵坐标（from_left_width_x，from_up_height_y）
-            from_left_width = (face_to_center_x - LT_x)*(face_from_W/2)/(face_to_W/2)
+            from_left_width = (face_to_center_x - LT_x) * (face_from_W / 2) / (face_to_W / 2)
             from_left_width_x = face_from_center_x - from_left_width
-            from_top_height = (face_to_center_y - LT_y)*(face_from_H/2)/((face_to_W/2)*face_from_H/face_from_W)
+            from_top_height = (face_to_center_y - LT_y) * (face_from_H / 2) / (
+                        (face_to_W / 2) * face_from_H / face_from_W)
             from_top_height_y = face_from_center_y - from_top_height
             # 计算from图中右下角的横纵坐标（from_right_width_x，from_bottom_height_y）
-            from_right_width = (RB_x - face_to_center_x)*(face_from_W/2)/(face_to_W/2)
+            from_right_width = (RB_x - face_to_center_x) * (face_from_W / 2) / (face_to_W / 2)
             from_right_width_x = face_from_center_x + from_right_width
-            from_bottom_height = (RB_y - face_to_center_y)*(face_from_H/2)/((face_to_W/2)*face_from_H/face_from_W)
-            from_bottom_height_y = face_from_center_y+from_bottom_height
+            from_bottom_height = (RB_y - face_to_center_y) * (face_from_H / 2) / (
+                        (face_to_W / 2) * face_from_H / face_from_W)
+            from_bottom_height_y = face_from_center_y + from_bottom_height
             # 从源照片中截取人脸显著部门
-            photo_crop = photo.crop((from_left_width_x,from_top_height_y,from_right_width_x,from_bottom_height_y))
-            temp_photo = photo_crop.resize((box[2]-box[0],box[3]-box[1]))
-            box_resize = box
-            img.paste(temp_photo,box_resize)
+            photo_crop = photo.crop((from_left_width_x, from_top_height_y, from_right_width_x, from_bottom_height_y))
+            temp_photo = photo_crop.resize((box[2] - box[0], box[3] - box[1]))
+            # 将正方形圆形化
+            temp_photo = square2cricle(temp_photo)
+            box_resize = (box[0], box[1], box[0]+temp_photo.size[0], box[1]+temp_photo.size[1])
+            # 设配黏贴
+            if temp_photo.mode == 'RGBA':
+                img.paste(temp_photo, box_resize, mask=temp_photo)
+            else:
+                img.paste(temp_photo, box_resize)
+        else:  # 模板人脸区宽大于高，暂时上面一样
+            #================================================================================================
+            # 计算from图中左上角的横纵坐标（from_left_width_x，from_up_height_y）
+            from_left_width = (face_to_center_x - LT_x) * (face_from_W / 2) / (face_to_W / 2)
+            from_left_width_x = face_from_center_x - from_left_width
+            from_top_height = (face_to_center_y - LT_y) * (face_from_H / 2) / (
+                        (face_to_W / 2) * face_from_H / face_from_W)
+            from_top_height_y = face_from_center_y - from_top_height
+            # 计算from图中右下角的横纵坐标（from_right_width_x，from_bottom_height_y）
+            from_right_width = (RB_x - face_to_center_x) * (face_from_W / 2) / (face_to_W / 2)
+            from_right_width_x = face_from_center_x + from_right_width
+            from_bottom_height = (RB_y - face_to_center_y) * (face_from_H / 2) / (
+                        (face_to_W / 2) * face_from_H / face_from_W)
+            from_bottom_height_y = face_from_center_y + from_bottom_height
+            # 从源照片中截取人脸显著部门
+            photo_crop = photo.crop((from_left_width_x, from_top_height_y, from_right_width_x, from_bottom_height_y))
+            temp_photo = photo_crop.resize((box[2] - box[0], box[3] - box[1]))
+            # 将正方形圆形化
+            temp_photo = square2cricle(temp_photo)
+            box_resize = (box[0], box[1], box[0]+temp_photo.size[0], box[1]+temp_photo.size[1])
+            # 设配黏贴
+            if temp_photo.mode == 'RGBA':
+                img.paste(temp_photo, box_resize, mask=temp_photo)
+            else:
+                img.paste(temp_photo, box_resize)
+            #============================================================================================
     else:  # 无人脸
         if mode is True:  # 允许裁剪
             w, h = photo.size
@@ -1775,7 +1809,8 @@ def draw_img_in_quadrilateral(img, psd_layers, url, constraint, WIDTH, HEIGHT, m
         response = requests.get(url)
         photo = Image.open(BytesIO(response.content))
     except:
-        photo = Image.open(url)
+        print(str(e))
+        photo = Image.open(url).convert("RGBA")
 
 
     # #==========================================================
@@ -1793,7 +1828,7 @@ def draw_img_in_quadrilateral(img, psd_layers, url, constraint, WIDTH, HEIGHT, m
 
     # 判断是否有人脸，或者感兴趣区域ROI，并将ROI移动到布局显著性区域
     face_location = face_detect(photo)
-    if face_location is not None:  # 有人脸
+    if face_location is not None and constraint.face_lefttop is not None:  # 有人脸，·且有提供约束框，则将人脸放入框中
         # 根据长宽计算人脸放置位置的左上角和右下角的绝对位置
         LT_face_x, LT_face_y, RB_face_x, RB_face_y = constraint.get_face_space(WIDTH, HEIGHT)
         # 分别计算：①上传照片中检测到的真实人脸的中心位置；②约束框中人脸放置位置的中心点
@@ -1807,7 +1842,7 @@ def draw_img_in_quadrilateral(img, psd_layers, url, constraint, WIDTH, HEIGHT, m
         face_to_W = RB_face_x - LT_face_x
         face_to_H = RB_face_y - LT_face_y
 
-        if face_from_W / face_from_H > face_to_W / face_to_H:
+        if face_from_W / face_from_H > face_to_W / face_to_H:  # 模板人脸区宽小于高
             # 计算from图中左上角的横纵坐标（from_left_width_x，from_up_height_y）
             from_left_width = (face_to_center_x - LT_x) * (face_from_W / 2) / (face_to_W / 2)
             from_left_width_x = face_from_center_x - from_left_width
@@ -1823,10 +1858,40 @@ def draw_img_in_quadrilateral(img, psd_layers, url, constraint, WIDTH, HEIGHT, m
             # 从源照片中截取人脸显著部门
             photo_crop = photo.crop((from_left_width_x, from_top_height_y, from_right_width_x, from_bottom_height_y))
             temp_photo = photo_crop.resize((box[2] - box[0], box[3] - box[1]))
-            # 将长方形转成四边形
-            temp_photo = rect2quad(temp_photo,LT_x, LT_y, RT_x, RT_y, RB_x, RB_y, LB_x, LB_y, min_x, min_y)
-            box_resize = (box[0],box[1],box[0]+temp_photo.size[0],box[1]+temp_photo.size[1])
-            img.paste(temp_photo, box_resize)
+            # 将正方形圆形化
+            temp_photo = square2cricle(temp_photo)
+            box_resize = (box[0], box[1], box[0]+temp_photo.size[0], box[1]+temp_photo.size[1])
+            # 设配黏贴
+            if temp_photo.mode == 'RGBA':
+                img.paste(temp_photo, box_resize, mask=temp_photo)
+            else:
+                img.paste(temp_photo, box_resize)
+        else:  # 模板人脸区宽大于高，暂时上面一样
+            #================================================================================================
+            # 计算from图中左上角的横纵坐标（from_left_width_x，from_up_height_y）
+            from_left_width = (face_to_center_x - LT_x) * (face_from_W / 2) / (face_to_W / 2)
+            from_left_width_x = face_from_center_x - from_left_width
+            from_top_height = (face_to_center_y - LT_y) * (face_from_H / 2) / (
+                        (face_to_W / 2) * face_from_H / face_from_W)
+            from_top_height_y = face_from_center_y - from_top_height
+            # 计算from图中右下角的横纵坐标（from_right_width_x，from_bottom_height_y）
+            from_right_width = (RB_x - face_to_center_x) * (face_from_W / 2) / (face_to_W / 2)
+            from_right_width_x = face_from_center_x + from_right_width
+            from_bottom_height = (RB_y - face_to_center_y) * (face_from_H / 2) / (
+                        (face_to_W / 2) * face_from_H / face_from_W)
+            from_bottom_height_y = face_from_center_y + from_bottom_height
+            # 从源照片中截取人脸显著部门
+            photo_crop = photo.crop((from_left_width_x, from_top_height_y, from_right_width_x, from_bottom_height_y))
+            temp_photo = photo_crop.resize((box[2] - box[0], box[3] - box[1]))
+            # 将正方形圆形化
+            temp_photo = square2cricle(temp_photo)
+            box_resize = (box[0], box[1], box[0]+temp_photo.size[0], box[1]+temp_photo.size[1])
+            # 设配黏贴
+            if temp_photo.mode == 'RGBA':
+                img.paste(temp_photo, box_resize, mask=temp_photo)
+            else:
+                img.paste(temp_photo, box_resize)
+            #============================================================================================
     else:  # 无人脸
         if mode is True:  # 允许裁剪
             w, h = photo.size
@@ -2105,11 +2170,12 @@ def draw_img_in_circle(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
         photo = Image.open(BytesIO(response.content))
         # photo = photo.convert('RGBA')
     except Exception as e:  # 网络地址获取失败的话获取本地图片
+        print(str(e))
         photo = Image.open(url).convert("RGBA")
 
     # 判断是否有人脸，或者感兴趣区域ROI，并将ROI移动到布局显著性区域
     face_location = face_detect(photo)
-    if face_location is not None:  # 有人脸
+    if face_location is not None and constraint.face_lefttop is not None:  # 有人脸，·且有提供约束框，则将人脸放入框中
         # 根据长宽计算人脸放置位置的左上角和右下角的绝对位置
         LT_face_x, LT_face_y, RB_face_x, RB_face_y = constraint.get_face_space(WIDTH, HEIGHT)
         # 分别计算：①上传照片中检测到的真实人脸的中心位置；②约束框中人脸放置位置的中心点
@@ -2123,7 +2189,7 @@ def draw_img_in_circle(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
         face_to_W = RB_face_x - LT_face_x
         face_to_H = RB_face_y - LT_face_y
 
-        if face_from_W / face_from_H > face_to_W / face_to_H:
+        if face_from_W / face_from_H > face_to_W / face_to_H:  # 模板人脸区宽小于高
             # 计算from图中左上角的横纵坐标（from_left_width_x，from_up_height_y）
             from_left_width = (face_to_center_x - LT_x) * (face_from_W / 2) / (face_to_W / 2)
             from_left_width_x = face_from_center_x - from_left_width
@@ -2141,8 +2207,38 @@ def draw_img_in_circle(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
             temp_photo = photo_crop.resize((box[2] - box[0], box[3] - box[1]))
             # 将正方形圆形化
             temp_photo = square2cricle(temp_photo)
-            box_resize = (box[0],box[1],box[0]+temp_photo.size[0],box[1]+temp_photo.size[1])
-            img.paste(temp_photo, box_resize)
+            box_resize = (box[0], box[1], box[0]+temp_photo.size[0], box[1]+temp_photo.size[1])
+            # 设配黏贴
+            if temp_photo.mode == 'RGBA':
+                img.paste(temp_photo, box_resize, mask=temp_photo)
+            else:
+                img.paste(temp_photo, box_resize)
+        else:  # 模板人脸区宽大于高，暂时上面一样
+            #================================================================================================
+            # 计算from图中左上角的横纵坐标（from_left_width_x，from_up_height_y）
+            from_left_width = (face_to_center_x - LT_x) * (face_from_W / 2) / (face_to_W / 2)
+            from_left_width_x = face_from_center_x - from_left_width
+            from_top_height = (face_to_center_y - LT_y) * (face_from_H / 2) / (
+                        (face_to_W / 2) * face_from_H / face_from_W)
+            from_top_height_y = face_from_center_y - from_top_height
+            # 计算from图中右下角的横纵坐标（from_right_width_x，from_bottom_height_y）
+            from_right_width = (RB_x - face_to_center_x) * (face_from_W / 2) / (face_to_W / 2)
+            from_right_width_x = face_from_center_x + from_right_width
+            from_bottom_height = (RB_y - face_to_center_y) * (face_from_H / 2) / (
+                        (face_to_W / 2) * face_from_H / face_from_W)
+            from_bottom_height_y = face_from_center_y + from_bottom_height
+            # 从源照片中截取人脸显著部门
+            photo_crop = photo.crop((from_left_width_x, from_top_height_y, from_right_width_x, from_bottom_height_y))
+            temp_photo = photo_crop.resize((box[2] - box[0], box[3] - box[1]))
+            # 将正方形圆形化
+            temp_photo = square2cricle(temp_photo)
+            box_resize = (box[0], box[1], box[0]+temp_photo.size[0], box[1]+temp_photo.size[1])
+            # 设配黏贴
+            if temp_photo.mode == 'RGBA':
+                img.paste(temp_photo, box_resize, mask=temp_photo)
+            else:
+                img.paste(temp_photo, box_resize)
+            #============================================================================================
     else:  # 无人脸
         if mode is True:  # 允许裁剪
             w, h = photo.size
@@ -2542,10 +2638,6 @@ if __name__ == '__main__':
     # response = requests.get()
 
 
-
-    # a=[[1,2,3],[2,3,4]]
-    # print(len(a))
-    # print(len(a[0]))
 
 
 
