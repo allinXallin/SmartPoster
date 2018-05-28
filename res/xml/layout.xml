@@ -31,7 +31,7 @@
 			<point_lefttop>3|81</point_lefttop>
 			<point_rightbottom>97|88</point_rightbottom>
 			<font_size_min>2</font_size_min>
-			<font_size_max>20</font_size_max>
+			<font_size_max>30</font_size_max>
 			<align>center</align>
 			<precent>95</precent>
 		</content>
@@ -76,7 +76,7 @@
 			<point_lefttop>6.7|83</point_lefttop>
 			<point_rightbottom>93.3|89</point_rightbottom>
 			<font_size_min>2</font_size_min>
-			<font_size_max>20</font_size_max>
+			<font_size_max>30</font_size_max>
 			<align>left</align>
 			<precent>95</precent>
 		</content>
@@ -121,7 +121,7 @@
 			<point_lefttop>4.8|82</point_lefttop>
 			<point_rightbottom>95.2|88</point_rightbottom>
 			<font_size_min>2</font_size_min>
-			<font_size_max>20</font_size_max>
+			<font_size_max>30</font_size_max>
 			<align>right</align>
 			<precent>95</precent>
 		</content>
@@ -166,7 +166,7 @@
 			<point_lefttop>89.6|25</point_lefttop>
 			<point_rightbottom>96.9|75</point_rightbottom>
 			<font_size_min>2</font_size_min>
-			<font_size_max>20</font_size_max>
+			<font_size_max>30</font_size_max>
 			<align>left</align>
 			<precent>95</precent>
 		</content>
@@ -481,7 +481,7 @@
 			<point_lefttop>3|84.1</point_lefttop>
 			<point_rightbottom>97|94.5</point_rightbottom>
 			<font_size_min>2</font_size_min>
-			<font_size_max>20</font_size_max>
+			<font_size_max>30</font_size_max>
 			<align>center</align>
 			<precent>95</precent>
 		</content>
@@ -526,7 +526,7 @@
 			<point_lefttop>6.7|87.5</point_lefttop>
 			<point_rightbottom>93.3|94.5</point_rightbottom>
 			<font_size_min>2</font_size_min>
-			<font_size_max>20</font_size_max>
+			<font_size_max>30</font_size_max>
 			<align>left</align>
 			<precent>95</precent>
 		</content>
@@ -571,7 +571,7 @@
 			<point_lefttop>4.8|85.3</point_lefttop>
 			<point_rightbottom>95.2|95.7</point_rightbottom>
 			<font_size_min>2</font_size_min>
-			<font_size_max>20</font_size_max>
+			<font_size_max>30</font_size_max>
 			<align>right</align>
 			<precent>95</precent>
 		</content>
@@ -616,7 +616,7 @@
 			<point_lefttop>89.6|28.9</point_lefttop>
 			<point_rightbottom>96.9|80.9</point_rightbottom>
 			<font_size_min>2</font_size_min>
-			<font_size_max>20</font_size_max>
+			<font_size_max>30</font_size_max>
 			<align>left</align>
 			<precent>95</precent>
 		</content>
@@ -672,7 +672,7 @@
 			<point_lefttop>3|84.1</point_lefttop>
 			<point_rightbottom>97|94.5</point_rightbottom>
 			<font_size_min>2</font_size_min>
-			<font_size_max>20</font_size_max>
+			<font_size_max>30</font_size_max>
 			<align>center</align>
 			<precent>95</precent>
 		</content>
@@ -762,7 +762,7 @@
 			<point_lefttop>4.8|85.3</point_lefttop>
 			<point_rightbottom>95.2|95.7</point_rightbottom>
 			<font_size_min>2</font_size_min>
-			<font_size_max>20</font_size_max>
+			<font_size_max>30</font_size_max>
 			<align>right</align>
 			<precent>95</precent>
 		</content>
@@ -807,7 +807,7 @@
 			<point_lefttop>89.6|28.9</point_lefttop>
 			<point_rightbottom>96.9|80.9</point_rightbottom>
 			<font_size_min>2</font_size_min>
-			<font_size_max>20</font_size_max>
+			<font_size_max>30</font_size_max>
 			<align>left</align>
 			<precent>95</precent>
 		</content>
