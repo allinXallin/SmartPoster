@@ -304,7 +304,7 @@ def produce_posters(json_data):
     # 根据色彩组ID从色彩库文件color.xml选出色彩组并保存到style_colors
     style_colors = get_colors_by_id(style.color_group_ids)
 
-    RECOMMEND_NUM = 1  # 返回给用户的推荐海报数为5，可调整
+    RECOMMEND_NUM = 4  # 返回给用户的推荐海报数为5，可调整
     count = 0  # 统计制作海报的个数
     couple = []  # 记录tyle_layouts、style_colors的组合，避免重复
     posters_result = {}  # 制作好的海报，以任务为单位，里面包含多个psd格式信息
@@ -326,18 +326,19 @@ def produce_posters(json_data):
         #poster = json.dumps(poster, ensure_ascii=False)
 
 
-    for i in range(10):
-        # ======每个任务默认都需要给用户推荐一个利用我们自己图像库生成的海报；因此上面的循环实际上产生了（RECOMMEND_NUM-1）个海报
-        # 随机从style_layouts、style_colors两个列表中抽取一对布局和色彩组合，但保证不能和之前的产生重复
-        i, j = get_new_couple_index(len(layouts) - 1, len(style_colors) - 1, couple)
-        z = random.randint(0, len(style.font_familys) - 1)
-        # 最后一张的photo必须是设计师提供的图像库，但若图像库无图，则还是用用户上传的photo
-        if len(os.listdir("res/photo_def/" + style.name)) > 0:  # 图像库中推荐照片个数大于0
-            photos = os.listdir(f"res/photo_def/{style.name}/{layouts[i].name}/")
-            task_info["photo"] = f'res/photo_def/{style.name}/{layouts[i].name}/{photos[random.randint(0, len(photos)-1)]}'  # 从图像库中随机选一张图片
-        poster = draw_a_poster(task_info, style.name, layouts[i], style_colors[j], style.font_familys[z], path,False) # False设计师提供的图像不允许裁剪
-        num = len([x for x in os.listdir(path)])
-        posters_result[path + "/p_" + str(num) +"/p_"+str(num)+".txt"] = poster
+    # for i in range(10):
+
+    # ======每个任务默认都需要给用户推荐一个利用我们自己图像库生成的海报；因此上面的循环实际上产生了（RECOMMEND_NUM-1）个海报
+    # 随机从style_layouts、style_colors两个列表中抽取一对布局和色彩组合，但保证不能和之前的产生重复
+    i, j = get_new_couple_index(len(layouts) - 1, len(style_colors) - 1, couple)
+    z = random.randint(0, len(style.font_familys) - 1)
+    # 最后一张的photo必须是设计师提供的图像库，但若图像库无图，则还是用用户上传的photo
+    if len(os.listdir("res/photo_def/" + style.name)) > 0:  # 图像库中推荐照片个数大于0
+        photos = os.listdir(f"res/photo_def/{style.name}/{layouts[i].name}/")
+        task_info["photo"] = f'res/photo_def/{style.name}/{layouts[i].name}/{photos[random.randint(0, len(photos)-1)]}'  # 从图像库中随机选一张图片
+    poster = draw_a_poster(task_info, style.name, layouts[i], style_colors[j], style.font_familys[z], path,False) # False设计师提供的图像不允许裁剪
+    num = len([x for x in os.listdir(path)])
+    posters_result[path + "/p_" + str(num) +"/p_"+str(num)+".txt"] = poster
 
 
     return posters_result
@@ -397,6 +398,12 @@ def send_posters_info(posters_result):
 
 
 
+
+
+
+
+
+#
 # #======================服务器部署版============================
 # # 制作好海报后，以POST方式发送数据回后端
 # def send_posters_info(posters_result):
@@ -649,8 +656,9 @@ def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, pat
     bg_name = None
     fg_name = None
     color = None
+
     # 由于背景和前景的选择会对色彩组有影响，因此如果可能的话根据选择的背景和前景重设颜色组
-    bg_name, fg_name, color = combine_bg_fg(style_layout.background,style_layout.foreground)
+    bg_name, fg_name, color = combine_bg_fg(style_layout.background, style_layout.foreground)
     # ==================很尴尬，应设计师要求，前景和背景不能同时都有，两者选其一=============
     if bg_name is not None and fg_name is not None:
         k = random.randint(0,1)
@@ -2483,10 +2491,10 @@ def combine_bg_fg(bg_str, fg_str):
             # fg第一元素为前景文件命名，后面的元素都是为色彩组名称
             fg = item.strip().split('|')
             fg_list.append(fg)
-    bg=None
-    fg=None
+    bg = None
+    fg = None
     color = None
-    #组合产生可能的色彩结果
+    # 组合产生可能的色彩结果
     if len(bg_list) >= len(fg_list):  # 背景图比前景图多
         if len(bg_list)>0:
             bg_temp = bg_list
@@ -2531,7 +2539,7 @@ def combine_bg_fg(bg_str, fg_str):
             bg = None
             fg = fg_list[k1][0]
             color = fg_list[k1][random.randint(1, len(fg_list[k1]) - 1)]
-    return bg,fg,color
+    return bg, fg, color
 
     # #上面函数里之前错误的做法
     # if bg_str is not None:
@@ -2617,6 +2625,8 @@ def smart_poster():
         # produce_posters(post_info)
     return '海报制作中!'
 
+
+
 # 访问方式:  http://127.0.0.1:5050/image/?imgurl=background/happy1.jpg
 @app.route('/image/', methods=['GET', 'POST'])
 def get_layer_png():
@@ -2632,6 +2642,10 @@ def get_layer_png():
     # str = "/background/happy1.jpg"
 
     return send_file(byte_io, mimetype='image/png', cache_timeout=0)
+
+
+
+
 
 
 if __name__ == '__main__':
@@ -2655,9 +2669,9 @@ if __name__ == '__main__':
     #     print(b)
     #     print(f)
     #     print(c)
-    # #
-    # #
-    # photo = Image.open('res/background/333.jpg')
+    # # #
+    # # #
+    # photo = Image.open('res/img/彩色.jpg')
     # faces = face_detect(photo)
 
 

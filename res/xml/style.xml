@@ -11,7 +11,7 @@
         <font_family>wygdmc.otf|pf-zct.ttf|STZHONGS.TTF|ywsfxsjt.ttf</font_family>
     </style>
 
-    <style name='炫酷科技' id='s03'>
+    <style name='炫酷科技' id='s02'>
         <name>CoolTechnology</name>
         <layout_IDs>t00011|t00012|t00013|t00014</layout_IDs>
         <color_group_IDs>B001|B002|B003|B004|B005</color_group_IDs>
@@ -25,18 +25,25 @@
         <font_family>wygdmc.otf|pf-zct.ttf|STZHONGS.TTF|ywsfxsjt.ttf</font_family>
     </style>
 
-    <style name='商业周刊' id='s02'>
+    <style name='商业周刊' id='s03'>
         <name>BusinessWeek</name>
         <layout_IDs>a00002|a00003|a00004|a00005</layout_IDs>
         <color_group_IDs>clr001</color_group_IDs>
         <font_family>pf-zct.ttf</font_family>
     </style>
 
-    <style name='星梦邮轮' id='s02'>
+    <style name='星梦邮轮' id='s05'>
         <name>StarCruise</name>
         <layout_IDs>f00002|f00003|ft00001|ft00004</layout_IDs>
         <color_group_IDs>S001|S002|S003|S004|S005|S006</color_group_IDs>
         <font_family>pf-zct.ttf</font_family>
+    </style>
+
+    <style name='高考加油' id='s06'>
+        <name>ComeOnGaoKao</name>
+        <layout_IDs>t00021|t00022|t00023|t00024</layout_IDs>
+        <color_group_IDs>F001|F002|F003|F004|F005</color_group_IDs>
+        <font_family>wygdmc.otf|pf-zct.ttf|STZHONGS.TTF|ywsfxsjt.ttf</font_family>
     </style>
 
 </CATALOG>
