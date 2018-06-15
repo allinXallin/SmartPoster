@@ -49,7 +49,7 @@
 
     <style name='端午节' id='s07'>
         <name>DuanWuJie</name>
-        <layout_IDs>t00701|t00703|t00704|a00701</layout_IDs>
+        <layout_IDs>t00701|t00703|t00704|a00702</layout_IDs>
         <color_group_IDs>DWJ001|DWJ002|DWJ003|DWJ004|DWJ005</color_group_IDs>
         <font_family>pf-zct.ttf|STZHONGS.TTF</font_family>
     </style>

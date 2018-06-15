@@ -623,13 +623,9 @@ def get_new_couple_index(len1, len2, couple):
 
 
 
-
-
-
-
-
 # 创建画布并开始绘制画报不同图层
 def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, path, mode):  #
+    print(style_layout.name)
     psd_layers = {}  # 海报格式信息，psd图层树
 
     # 计算海报存放路径path下文件数num，该海报文件名为'num+1'
@@ -673,6 +669,7 @@ def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, pat
         #get_colors_by_id函数参数需要list类型
         color_list = []
         color_list.append(color)
+        print(color_list)
         style_color = get_colors_by_id(color_list)[0]
 
 
@@ -1619,7 +1616,7 @@ def draw_img_in_rect(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
         photo = Image.open(BytesIO(response.content))
         #photo = photo.convert('RGBA')
     except Exception as e:  # 网络地址获取失败的话获取本地图片
-        print(str(e))
+        # print(str(e))
         photo = Image.open(url).convert("RGBA")
 
     #判断是否有人脸，或者感兴趣区域ROI，并将ROI移动到布局显著性区域
@@ -1820,7 +1817,7 @@ def draw_img_in_quadrilateral(img, psd_layers, url, constraint, WIDTH, HEIGHT, m
         response = requests.get(url)
         photo = Image.open(BytesIO(response.content))
     except Exception as e:  # 网络地址获取失败的话获取本地图片
-        print(str(e))
+        # print(str(e))
         photo = Image.open(url).convert("RGBA")
 
 
@@ -2181,7 +2178,7 @@ def draw_img_in_circle(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
         photo = Image.open(BytesIO(response.content))
         # photo = photo.convert('RGBA')
     except Exception as e:  # 网络地址获取失败的话获取本地图片
-        print(str(e))
+        # print(str(e))
         photo = Image.open(url).convert("RGBA")
 
     # 判断是否有人脸，或者感兴趣区域ROI，并将ROI移动到布局显著性区域
