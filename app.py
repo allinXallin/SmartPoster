@@ -346,86 +346,86 @@ def produce_posters(json_data):
 
 
 
-#
-# #===========================本地测试版=========================
-# # 制作好海报后，以POST方式发送数据回后端
-# def send_posters_info(posters_result):
-#     URL = 'http://172.16.0.200/api/v1/psdinfo'  # web后端地址
-#     # 待返回给后端的信息，post给后端
-#     post_data = {}
-#     post_data['task_id'] = posters_result['taskid']
-#     post_data['AlgorithmUpgrade'] = 1
-#     posters_result.pop('taskid')
-#     k = 1 # 海报计数器
-#     pre_imgurl = "http://172.16.0.50:5050/image/?imgurl="
-#     #先移除posters_result字典中taskid，其余则是海报相关的信息
-#     files={}
-#     for key,value in posters_result.items():
-#         post_data['preview_url_' + str(k)] = pre_imgurl + value['name']
-#         files['psdinfo_' + str(k)] = open(key, 'rb')
-#         k=k+1
-#     print(post_data)
-#     #以post方式发送给web后端
-#     try:
-#         #post_data = json.dumps(post_data)
-#         response = requests.post(URL,post_data,files=files)
-#         #response = json.loads(response)
-#         print(response.text)
-#     except Exception as e:
-#         # 若海报信息post传递失败，则将海报放到制作好的海报队列中
-#         #=======================================================
-#         print(str(e))
-#
-#     # 使用requests发送POST请求。   一个http请求 = 请求行 + 请求报头 + 消息主体
-#     # # 方式一：application/x-www-form-urlencoded      form表单形式提交数据（需构造一个字典）
-#     # URL = 'http://120.78.10.209/api/v1/psdinfo'
-#     # data = {'preimg_url_1':'http://172.16.0.70:5050/image/?imgurl=background/happy1.jpg','preimg_url_2':'http://172.16.0.70:5050/image/?imgurl=background/happy2.jpg'}
-#     # req = requests.post(URL,data=data)
-#     # print(req.json())
-#
-#     # # 方式二：application/json    以json串提交数据
-#     # URL = 'http://120.78.10.209/api/v1/psdinfo'
-#     # data = json.dumps({'key1':'value', 'key2':'value2'})
-#     # req = requests.post(URL,data=data)
-#     # print(req.text)
-#
-#     # # 方式三；multipart/form-data     用来上传文件
-#     # URL = 'http://120.78.10.209/api/v1/psdinfo'
-#     # file = {'file': open('outputPosters/1/1/p_1/p_1.txt', 'rb')}
-#     # req = requests.post(URL,files=file)
-#     # print(req.text)
-#
-#
 
-
-
-
-
-
-
-
-#======================服务器部署版============================
+#===========================本地测试版=========================
 # 制作好海报后，以POST方式发送数据回后端
 def send_posters_info(posters_result):
-    URL = 'http://wx.weicheche.cn/wxposters/api/v1/psdinfo'
+    URL = 'http://172.16.0.200/api/v1/psdinfo'  # web后端地址
+    # 待返回给后端的信息，post给后端
     post_data = {}
     post_data['task_id'] = posters_result['taskid']
     post_data['AlgorithmUpgrade'] = 1
     posters_result.pop('taskid')
-    k = 1
-    pre_imgurl = "http://120.78.10.209:5050/image/?imgurl="
+    k = 1 # 海报计数器
+    pre_imgurl = "http://172.16.0.50:5050/image/?imgurl="
+    #先移除posters_result字典中taskid，其余则是海报相关的信息
     files={}
     for key,value in posters_result.items():
         post_data['preview_url_' + str(k)] = pre_imgurl + value['name']
-
         files['psdinfo_' + str(k)] = open(key, 'rb')
-        k = k+1
+        k=k+1
     print(post_data)
+    #以post方式发送给web后端
     try:
-        response = requests.post(URL, post_data, files=files)
-        # print(response.text)
+        #post_data = json.dumps(post_data)
+        response = requests.post(URL,post_data,files=files)
+        #response = json.loads(response)
+        print(response.text)
     except Exception as e:
+        # 若海报信息post传递失败，则将海报放到制作好的海报队列中
+        #=======================================================
         print(str(e))
+
+    # 使用requests发送POST请求。   一个http请求 = 请求行 + 请求报头 + 消息主体
+    # # 方式一：application/x-www-form-urlencoded      form表单形式提交数据（需构造一个字典）
+    # URL = 'http://120.78.10.209/api/v1/psdinfo'
+    # data = {'preimg_url_1':'http://172.16.0.70:5050/image/?imgurl=background/happy1.jpg','preimg_url_2':'http://172.16.0.70:5050/image/?imgurl=background/happy2.jpg'}
+    # req = requests.post(URL,data=data)
+    # print(req.json())
+
+    # # 方式二：application/json    以json串提交数据
+    # URL = 'http://120.78.10.209/api/v1/psdinfo'
+    # data = json.dumps({'key1':'value', 'key2':'value2'})
+    # req = requests.post(URL,data=data)
+    # print(req.text)
+
+    # # 方式三；multipart/form-data     用来上传文件
+    # URL = 'http://120.78.10.209/api/v1/psdinfo'
+    # file = {'file': open('outputPosters/1/1/p_1/p_1.txt', 'rb')}
+    # req = requests.post(URL,files=file)
+    # print(req.text)
+
+
+
+
+
+
+
+
+
+
+# #======================服务器部署版============================
+# # 制作好海报后，以POST方式发送数据回后端
+# def send_posters_info(posters_result):
+#     URL = 'http://wx.weicheche.cn/wxposters/api/v1/psdinfo'
+#     post_data = {}
+#     post_data['task_id'] = posters_result['taskid']
+#     post_data['AlgorithmUpgrade'] = 1
+#     posters_result.pop('taskid')
+#     k = 1
+#     pre_imgurl = "http://120.78.10.209:5050/image/?imgurl="
+#     files={}
+#     for key,value in posters_result.items():
+#         post_data['preview_url_' + str(k)] = pre_imgurl + value['name']
+#
+#         files['psdinfo_' + str(k)] = open(key, 'rb')
+#         k = k+1
+#     print(post_data)
+#     try:
+#         response = requests.post(URL, post_data, files=files)
+#         # print(response.text)
+#     except Exception as e:
+#         print(str(e))
 
 
 
@@ -844,9 +844,8 @@ def draw_title_horizontal(img, psd_layers, text, constraint, color, font, multil
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(psd_layers['width'],
                                                                                        psd_layers['height'])
     # 按比例缩放约束空间
-    PERCENT_TEXT_SPACE = float(constraint.precent)/100
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = shrink_rect(left_top_x, left_top_y, right_bottom_x,
-                                                                         right_bottom_y, PERCENT_TEXT_SPACE)
+                                                                         right_bottom_y, constraint)
     # 文字绘制的边界：left，top，width，height
     box_in_box = ()
     # 添加到json里面的字体尺寸
@@ -873,12 +872,12 @@ def draw_title_horizontal(img, psd_layers, text, constraint, color, font, multil
                 # 将最适合的字体大小保存到actual_size，供生成json使用
                 actual_size = now_size
                 # 根据要求的对齐方式进行绘制，left、center、right
-                if constraint.align == "left":  # 文本左对齐
+                if constraint.align == "left|center":  # 文本左对齐
                     draw_img.text((left_top_x, left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2), text,
                                   fill=color, font=ft)
                     draw_layer.text((0, (right_bottom_y - left_top_y) / 2 - h / 2), text, fill=color, font=ft)
                     box_in_box = (left_top_x, left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2, left_top_x+w, h + left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2)
-                elif constraint.align == "center":  # 文本中间对齐
+                elif constraint.align == "center|center":  # 文本中间对齐
                     draw_img.text((left_top_x + (right_bottom_x - left_top_x) / 2 - w / 2,
                                    left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2), text, fill=color, font=ft)
                     draw_layer.text(
@@ -886,7 +885,7 @@ def draw_title_horizontal(img, psd_layers, text, constraint, color, font, multil
                         fill=color, font=ft)
                     box_in_box = (left_top_x + (right_bottom_x - left_top_x) / 2 - w / 2,
                                   left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2, w+left_top_x + (right_bottom_x - left_top_x) / 2 - w / 2, h+left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2)
-                elif constraint.align == "right":  # 文本右对齐
+                elif constraint.align == "right|center":  # 文本右对齐
                     draw_img.text((right_bottom_x - w, left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2), text,
                                   fill=color, font=ft)
                     draw_layer.text((right_bottom_x - w - left_top_x, (right_bottom_y - left_top_y) / 2 - h / 2), text,
@@ -909,7 +908,7 @@ def draw_title_horizontal(img, psd_layers, text, constraint, color, font, multil
                 # 将最适合的字体大小保存到actual_size，供生成json使用
                 actual_size = now_size
                 # 根据要求的对齐方式进行绘制，left、center、right
-                if constraint.align == "left":  # 文本左对齐
+                if constraint.align == "left|center":  # 文本左对齐
                     # 分割行
                     text = text + " "  # 处理最后少一个字问题，方便
                     start = 0
@@ -930,7 +929,7 @@ def draw_title_horizontal(img, psd_layers, text, constraint, color, font, multil
                         draw_img.text((left_top_x, left_top_y + i * h), lines[t], fill=color, font=ft)
                         draw_layer.text((0, i * h), lines[t], fill=color, font=ft)
                         i = i + 1
-                elif constraint.align == "center":  # 文本中间对齐
+                elif constraint.align == "center|center":  # 文本中间对齐
                     # 暂时只支持左对齐，因为中心对齐和右对齐涉及到文本语义理解
                     print("暂时只支持左对齐！并且处理方式跟左对齐一样")
                     # 分割行
@@ -1007,9 +1006,8 @@ def draw_title_vertical(img, psd_layers, text, constraint, color, font, multilin
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(psd_layers['width'],
                                                                                        psd_layers['height'])
     # 按比例缩放约束空间
-    PERCENT_TEXT_SPACE = float(constraint.precent)/100
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = shrink_rect(left_top_x, left_top_y, right_bottom_x,
-                                                                         right_bottom_y, PERCENT_TEXT_SPACE)
+                                                                         right_bottom_y, constraint)
     # 文字绘制的边界：left，top，width，height
     box_in_box = ()
     # 添加到json里面的字体尺寸
@@ -1036,16 +1034,16 @@ def draw_title_vertical(img, psd_layers, text, constraint, color, font, multilin
                 # 将最适合的字体大小保存到actual_size，供生成json使用
                 actual_size = now_size
                 # 根据要求的对齐方式进行绘制，left、center、right
-                if constraint.align == "left":  # 文本左对齐
+                if constraint.align == "left|center":  # 文本左对齐
                     for row in range(len(text)):  # 当前行号
                         draw_img.text((left_top_x, left_top_y + row*h), text[row],fill=color, font=ft)
                         draw_layer.text((0, row*h), text[row], fill=color, font=ft)
-                elif constraint.align == "center":  # 文本中间对齐
+                elif constraint.align == "center|center":  # 文本中间对齐
                     print("竖写时，暂时只支持左对齐")
                     for row in range(len(text)):  # 当前行号
                         draw_img.text((left_top_x, left_top_y + row*h), text[row],fill=color, font=ft)
                         draw_layer.text((0, row*h), text[row], fill=color, font=ft)
-                elif constraint.align == "right":  # 文本右对齐
+                elif constraint.align == "right|center":  # 文本右对齐
                     print("竖写时，暂时只支持左对齐 ")
                     for row in range(len(text)):  # 当前行号
                         draw_img.text((left_top_x, left_top_y + row*h), text[row],fill=color, font=ft)
@@ -1066,7 +1064,7 @@ def draw_title_vertical(img, psd_layers, text, constraint, color, font, multilin
                 # 将最适合的字体大小保存到actual_size，供生成json使用
                 actual_size = now_size
                 # 根据要求的对齐方式进行绘制，left、center、right
-                if constraint.align == "left":  # 文本左对齐
+                if constraint.align == "left|center":  # 文本左对齐
                     # 分割行
                     text = text + " "  # 处理最后少一个字问题，方便
                     start = 0
@@ -1087,7 +1085,7 @@ def draw_title_vertical(img, psd_layers, text, constraint, color, font, multilin
                         draw_img.text((left_top_x, left_top_y + i * h), lines[t], fill=color, font=ft)
                         draw_layer.text((0, i * h), lines[t], fill=color, font=ft)
                         i = i + 1
-                elif constraint.align == "center":  # 文本中间对齐
+                elif constraint.align == "center|center":  # 文本中间对齐
                     # 暂时只支持左对齐，因为中心对齐和右对齐涉及到文本语义理解
                     print("暂时只支持左对齐！并且处理方式跟左对齐一样")
                     # 分割行
@@ -1184,9 +1182,8 @@ def draw_text_horizontal(img, psd_layers, text, constraint, color, font, multili
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(psd_layers['width'],
                                                                                        psd_layers['height'])
     # 按比例缩放约束空间
-    PERCENT_TEXT_SPACE = float(constraint.precent)/100
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = shrink_rect(left_top_x, left_top_y, right_bottom_x,
-                                                                         right_bottom_y, PERCENT_TEXT_SPACE)
+                                                                         right_bottom_y, constraint)
     # 文字绘制的边界：left，top，width，height
     box_in_box = ()
     # 添加到json里面的字体尺寸
@@ -1214,12 +1211,12 @@ def draw_text_horizontal(img, psd_layers, text, constraint, color, font, multili
                 # 将最适合的字体大小保存到actual_size，供生成json使用
                 actual_size = now_size
                 # 根据要求的对齐方式进行绘制，left、center、right
-                if constraint.align == "left":  # 文本左对齐
+                if constraint.align == "left|center":  # 文本左对齐
                     draw_img.text((left_top_x, left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2), text,
                                   fill=color, font=ft)
                     draw_layer.text((0, (right_bottom_y - left_top_y) / 2 - h / 2), text, fill=color, font=ft)
                     box_in_box = (left_top_x, left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2, left_top_x+w, h + left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2)
-                elif constraint.align == "center":  # 文本中间对齐
+                elif constraint.align == "center|center":  # 文本中间对齐
                     draw_img.text((left_top_x + (right_bottom_x - left_top_x) / 2 - w / 2,
                                    left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2), text, fill=color, font=ft)
                     draw_layer.text(
@@ -1227,7 +1224,7 @@ def draw_text_horizontal(img, psd_layers, text, constraint, color, font, multili
                         fill=color, font=ft)
                     box_in_box = (left_top_x + (right_bottom_x - left_top_x) / 2 - w / 2,
                                   left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2, w+left_top_x + (right_bottom_x - left_top_x) / 2 - w / 2, h+left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2)
-                elif constraint.align == "right":  # 文本右对齐
+                elif constraint.align == "right|center":  # 文本右对齐
                     draw_img.text((right_bottom_x - w, left_top_y + (right_bottom_y - left_top_y) / 2 - h / 2), text,
                                   fill=color, font=ft)
                     draw_layer.text((right_bottom_x - w - left_top_x, (right_bottom_y - left_top_y) / 2 - h / 2), text,
@@ -1250,7 +1247,7 @@ def draw_text_horizontal(img, psd_layers, text, constraint, color, font, multili
                 # 将最适合的字体大小保存到actual_size，供生成json使用
                 actual_size = now_size
                 # 根据要求的对齐方式进行绘制，left、center、right
-                if constraint.align == "left":  # 文本左对齐
+                if constraint.align == "left|center":  # 文本左对齐
                     # 分割行
                     text = text + " "  # 处理最后少一个字问题，方便
                     start = 0
@@ -1269,7 +1266,7 @@ def draw_text_horizontal(img, psd_layers, text, constraint, color, font, multili
                         draw_img.text((left_top_x, left_top_y + i * h), lines[t], fill=color, font=ft)
                         draw_layer.text((0, i * h), lines[t], fill=color, font=ft)
                         i = i + 1
-                elif constraint.align == "center":  # 文本中间对齐
+                elif constraint.align == "center|center":  # 文本中间对齐
                     # 暂时只支持左对齐，因为中心对齐和右对齐涉及到文本语义理解
                     print("已经支持中心对齐！")
                     text = text + " "
@@ -1363,9 +1360,8 @@ def draw_text_vertical(img, psd_layers, text, constraint, color, font, multiline
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(psd_layers['width'],
                                                                                        psd_layers['height'])
     # 按比例缩放约束空间
-    PERCENT_TEXT_SPACE = float(constraint.precent)/100
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = shrink_rect(left_top_x, left_top_y, right_bottom_x,
-                                                                         right_bottom_y, PERCENT_TEXT_SPACE)
+                                                                         right_bottom_y, constraint)
     # 文字绘制的边界：left，top，width，height
     box_in_box = ()
     # 添加到json里面的字体尺寸
@@ -1430,7 +1426,7 @@ def draw_text_vertical(img, psd_layers, text, constraint, color, font, multiline
                 # 将最适合的字体大小保存到actual_size，供生成json使用
                 actual_size = now_size
                 # 根据要求的对齐方式进行绘制，left、center、right
-                if constraint.align == "left":  # 文本左对齐
+                if constraint.align == "left|center":  # 文本左对齐
                     start = 0
                     end = len(text)-1
                     lines = []
@@ -1462,7 +1458,7 @@ def draw_text_vertical(img, psd_layers, text, constraint, color, font, multiline
                     for t in range(len(lines_T)):
                         draw_img.text((left_top_x, left_top_y + t * h), lines_T[t], fill=color, font=ft)
                         draw_layer.text((0, t * h), lines_T[t], fill=color, font=ft)
-                elif constraint.align == "center":  # 文本中间对齐
+                elif constraint.align == "center|center":  # 文本中间对齐
                     # 暂时只支持左对齐，因为中心对齐和右对齐涉及到文本语义理解
                     print("竖着绘制文本，暂时只支持左对齐！")
                     #========================代码通同left左对齐，之后要改===============
@@ -1604,8 +1600,7 @@ def draw_img_in_rect(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
     # 根据长宽计算左上角和右下角的绝对位置
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(WIDTH, HEIGHT)
     # 按比例缩放约束空间
-    PERCENT_IMG_SPACE = float(constraint.precent)/100
-    LT_x, LT_y, RB_x, RB_y = shrink_rect(left_top_x, left_top_y, right_bottom_x, right_bottom_y, PERCENT_IMG_SPACE)
+    LT_x, LT_y, RB_x, RB_y = shrink_rect(left_top_x, left_top_y, right_bottom_x, right_bottom_y, constraint)
     # resize操作需要整数,box为图片缩放大小和粘贴区域
     box = (LT_x, LT_y, RB_x, RB_y)
     box_resize = ()  # 实际在原始图中绘制的位置
@@ -1714,13 +1709,13 @@ def draw_img_in_rect(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
             if w / h < (box[2] - box[0]) / (box[3] - box[1]):
                 temp_photo = photo.resize((int(w / h * (box[3] - box[1])), box[3] - box[1]))  # 高度优先等比例缩放
                 # 根据图片对齐方式计算粘贴的位置box_temp
-                if constraint.align == "left":  # 图片左对齐
+                if constraint.align == "left|center":  # 图片左对齐
                     box_resize = (box[0], box[1], box[0] + temp_photo.size[0], box[1] + temp_photo.size[1])
-                elif constraint.align == "center":  # 图片中心对齐
+                elif constraint.align == "center|center":  # 图片中心对齐
                     # 中心对齐时，先计算logo放置位置的左上角的X坐标
                     X = int(((box[2] - box[0]) - (temp_photo.size[0])) / 2 + box[0])
                     box_resize = (X, box[1], X + temp_photo.size[0], box[1] + temp_photo.size[1])
-                elif constraint.align == "right":  # 否则就是右对齐
+                elif constraint.align == "right|center":  # 否则就是右对齐
                     box_resize = (box[2] - temp_photo.size[0], box[1], box[2], box[1] + temp_photo.size[1])
                 else:  # 默认也是中心对齐
                     X = int(((box[2] - box[0]) - (temp_photo.size[0])) / 2 + box[0])
@@ -1732,13 +1727,13 @@ def draw_img_in_rect(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
                     img.paste(temp_photo, box_resize)
             else:
                 temp_photo = photo.resize((box[2] - box[0], int(h / w * (box[2] - box[0]))))  # 宽度优先等比例缩放
-                if constraint.align == "top":  # 图片顶端对齐
+                if constraint.align == "center|top":  # 图片顶端对齐
                     box_resize = (box[0], box[1], box[0] + temp_photo.size[0], box[1] + temp_photo.size[1])
-                elif constraint.align == "right":  # 图片中心对齐
+                elif constraint.align == "center|center":  # 图片中心对齐
                     # 此时，中心对齐时，先计算logo放置位置的左上角的Y坐标
                     Y = int(((box[3] - box[1]) - (temp_photo.size[1])) / 2 + box[1])
                     box_resize = (box[0], Y, box[0] + temp_photo.size[0], Y + temp_photo.size[1])
-                elif constraint.align == "bottom":  # 否则就是底端对齐
+                elif constraint.align == "center|bottom":  # 否则就是底端对齐
                     box_resize = (box[0], box[3] - temp_photo.size[1], box[0] + temp_photo.size[0], box[3])
                 else:  # 默认也采用中心对齐
                     Y = int(((box[3] - box[1]) - (temp_photo.size[1])) / 2 + box[1])
@@ -1799,9 +1794,8 @@ def draw_img_in_quadrilateral(img, psd_layers, url, constraint, WIDTH, HEIGHT, m
     # 根据长宽计算不规则四边形的四个角的绝对位置
     LT_x, LT_y, RT_x, RT_y, RB_x, RB_y, LB_x, LB_y = constraint.get_quadrilateral_space(WIDTH, HEIGHT)
     # 按比例缩放约束空间
-    PERCENT_IMG_SPACE = float(constraint.precent) / 100
     LT_x, LT_y, RT_x, RT_y, RB_x, RB_y, LB_x, LB_y = shrink_quadrilateral(LT_x, LT_y, RT_x, RT_y, RB_x, RB_y, LB_x,
-                                                                          LB_y, PERCENT_IMG_SPACE)
+                                                                          LB_y, constraint)
 
     # 计算不规则四边形外接长方形的范围
     min_x = min(LT_x, RT_x, RB_x, LB_x)
@@ -1928,13 +1922,13 @@ def draw_img_in_quadrilateral(img, psd_layers, url, constraint, WIDTH, HEIGHT, m
             if w / h < (box[2] - box[0]) / (box[3] - box[1]):
                 temp_photo = photo.resize((int(w / h * (box[3] - box[1])), box[3] - box[1]))  # 高度优先等比例缩放
                 # 根据图片对齐方式计算粘贴的位置box_temp
-                if constraint.align == "left":  # 图片左对齐
+                if constraint.align == "left|center":  # 图片左对齐
                     box_resize = (box[0], box[1], box[0] + temp_photo.size[0], box[1] + temp_photo.size[1])
-                elif constraint.align == "center":  # 图片中心对齐
+                elif constraint.align == "center|center":  # 图片中心对齐
                     # 中心对齐时，先计算logo放置位置的左上角的X坐标
                     X = int(((box[2] - box[0]) - (temp_photo.size[0])) / 2 + box[0])
                     box_resize = (X, box[1], X + temp_photo.size[0], box[1] + temp_photo.size[1])
-                elif constraint.align == "right":  # 否则就是右对齐
+                elif constraint.align == "right|center":  # 否则就是右对齐
                     box_resize = (box[2] - temp_photo.size[0], box[1], box[2], box[1] + temp_photo.size[1])
                 else:  # 默认也是中心对齐
                     X = int(((box[2] - box[0]) - (temp_photo.size[0])) / 2 + box[0])
@@ -1949,13 +1943,13 @@ def draw_img_in_quadrilateral(img, psd_layers, url, constraint, WIDTH, HEIGHT, m
                     img.paste(temp_photo, box_resize)
             else:
                 temp_photo = photo.resize((box[2] - box[0], int(h / w * (box[2] - box[0]))))  # 宽度优先等比例缩放
-                if constraint.align == "top":  # 图片顶端对齐
+                if constraint.align == "center|top":  # 图片顶端对齐
                     box_resize = (box[0], box[1], box[0] + temp_photo.size[0], box[1] + temp_photo.size[1])
-                elif constraint.align == "right":  # 图片中心对齐
+                elif constraint.align == "center|center":  # 图片中心对齐
                     # 此时，中心对齐时，先计算logo放置位置的左上角的Y坐标
                     Y = int(((box[3] - box[1]) - (temp_photo.size[1])) / 2 + box[1])
                     box_resize = (box[0], Y, box[0] + temp_photo.size[0], Y + temp_photo.size[1])
-                elif constraint.align == "bottom":  # 否则就是底端对齐
+                elif constraint.align == "center|bottom":  # 否则就是底端对齐
                     box_resize = (box[0], box[3] - temp_photo.size[1], box[0] + temp_photo.size[0], box[3])
                 else:  # 默认也采用中心对齐
                     Y = int(((box[3] - box[1]) - (temp_photo.size[1])) / 2 + box[1])
@@ -2166,8 +2160,7 @@ def draw_img_in_circle(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
     # 根据长宽计算左上角和右下角的绝对位置
     left_top_x, left_top_y, right_bottom_x, right_bottom_y = constraint.get_rect_space(WIDTH, HEIGHT)
     # 按比例缩放约束空间
-    PERCENT_IMG_SPACE = float(constraint.precent) / 100
-    LT_x, LT_y, RB_x, RB_y = shrink_rect(left_top_x, left_top_y, right_bottom_x, right_bottom_y, PERCENT_IMG_SPACE)
+    LT_x, LT_y, RB_x, RB_y = shrink_rect(left_top_x, left_top_y, right_bottom_x, right_bottom_y, constraint)
     # resize操作需要整数,box为图片缩放大小和粘贴区域
     box = (LT_x, LT_y, RB_x, RB_y)
     box_resize = ()  # 实际在原始图中绘制的位置
@@ -2276,13 +2269,13 @@ def draw_img_in_circle(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
             if w / h < (box[2] - box[0]) / (box[3] - box[1]):
                 temp_photo = photo.resize((int(w / h * (box[3] - box[1])), box[3] - box[1]))  # 高度优先等比例缩放
                 # 根据图片对齐方式计算粘贴的位置box_temp
-                if constraint.align == "left":  # 图片左对齐
+                if constraint.align == "left|center":  # 图片左对齐
                     box_resize = (box[0], box[1], box[0] + temp_photo.size[0], box[1] + temp_photo.size[1])
-                elif constraint.align == "center":  # 图片中心对齐
+                elif constraint.align == "center|center":  # 图片中心对齐
                     # 中心对齐时，先计算logo放置位置的左上角的X坐标
                     X = int(((box[2] - box[0]) - (temp_photo.size[0])) / 2 + box[0])
                     box_resize = (X, box[1], X + temp_photo.size[0], box[1] + temp_photo.size[1])
-                elif constraint.align == "right":  # 否则就是右对齐
+                elif constraint.align == "right|center":  # 否则就是右对齐
                     box_resize = (box[2] - temp_photo.size[0], box[1], box[2], box[1] + temp_photo.size[1])
                 else:  # 默认也是中心对齐
                     X = int(((box[2] - box[0]) - (temp_photo.size[0])) / 2 + box[0])
@@ -2297,13 +2290,13 @@ def draw_img_in_circle(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
                     img.paste(temp_photo, box_resize)
             else:
                 temp_photo = photo.resize((box[2] - box[0], int(h / w * (box[2] - box[0]))))  # 宽度优先等比例缩放
-                if constraint.align == "top":  # 图片顶端对齐
+                if constraint.align == "center|top":  # 图片顶端对齐
                     box_resize = (box[0], box[1], box[0] + temp_photo.size[0], box[1] + temp_photo.size[1])
-                elif constraint.align == "right":  # 图片中心对齐
+                elif constraint.align == "center|right":  # 图片中心对齐
                     # 此时，中心对齐时，先计算logo放置位置的左上角的Y坐标
                     Y = int(((box[3] - box[1]) - (temp_photo.size[1])) / 2 + box[1])
                     box_resize = (box[0], Y, box[0] + temp_photo.size[0], Y + temp_photo.size[1])
-                elif constraint.align == "bottom":  # 否则就是底端对齐
+                elif constraint.align == "center|bottom":  # 否则就是底端对齐
                     box_resize = (box[0], box[3] - temp_photo.size[1], box[0] + temp_photo.size[0], box[3])
                 else:  # 默认也采用中心对齐
                     Y = int(((box[3] - box[1]) - (temp_photo.size[1])) / 2 + box[1])
@@ -2334,17 +2327,74 @@ def draw_img_in_circle(img, psd_layers, url, constraint, WIDTH, HEIGHT, mode):
 
 
 
-# 按百分比缩小长方形约束空间
-def shrink_rect(left_top_x, left_top_y, right_bottom_x, right_bottom_y, SPACE_PERCENT):
+# 按百分比、对齐方式，缩小长方形约束空间
+def shrink_rect(left_top_x, left_top_y, right_bottom_x, right_bottom_y,constraint):
+    #计算布局文件中的缩放比例、对齐方式
+    SPACE_PERCENT = float(constraint.precent) / 100
+    ALIGN = constraint.align
+
     # 先计算减小的留白宽度
-    offset_x = (right_bottom_x - left_top_x) * (1 - SPACE_PERCENT) / 2
-    offset_y = (right_bottom_y - left_top_y) * (1 - SPACE_PERCENT) / 2
-    return int(left_top_x + offset_x), int(left_top_y + offset_y), int(right_bottom_x - offset_x), int(
-        right_bottom_y - offset_y)
+    offset_x = (right_bottom_x - left_top_x) * (1 - SPACE_PERCENT)
+    offset_y = (right_bottom_y - left_top_y) * (1 - SPACE_PERCENT)
+
+    # 缩小后长方形的坐标
+    if ALIGN == 'left|top':
+        left_top_x = left_top_x
+        left_top_y = left_top_y
+        right_bottom_x = right_bottom_x - offset_x
+        right_bottom_y = right_bottom_y - offset_y
+    elif ALIGN == 'center|top':
+        left_top_x = left_top_x + offset_x/2
+        left_top_y = left_top_y
+        right_bottom_x = right_bottom_x - offset_x/2
+        right_bottom_y = right_bottom_y - offset_y
+    elif ALIGN == 'right|top':
+        left_top_x = left_top_x + offset_x
+        left_top_y = left_top_y
+        right_bottom_x = right_bottom_x
+        right_bottom_y = right_bottom_y - offset_y
+    elif ALIGN == 'left|center':
+        left_top_x = left_top_x
+        left_top_y = left_top_y + offset_y/2
+        right_bottom_x = right_bottom_x - offset_x
+        right_bottom_y = right_bottom_y - offset_y/2
+    elif ALIGN == 'center|center':
+        left_top_x = left_top_x + offset_x/2
+        left_top_y = left_top_y + offset_y / 2
+        right_bottom_x = right_bottom_x - offset_x/2
+        right_bottom_y = right_bottom_y - offset_y / 2
+    elif ALIGN == 'right|center':
+        left_top_x = left_top_x + offset_x
+        left_top_y = left_top_y + offset_y / 2
+        right_bottom_x = right_bottom_x
+        right_bottom_y = right_bottom_y - offset_y / 2
+    elif ALIGN == 'left|bottom':
+        left_top_x = left_top_x
+        left_top_y = left_top_y + offset_y
+        right_bottom_x = right_bottom_x - offset_x
+        right_bottom_y = right_bottom_y
+    elif ALIGN == 'center|bottom':
+        left_top_x = left_top_x + offset_x/2
+        left_top_y = left_top_y + offset_y
+        right_bottom_x = right_bottom_x - offset_x/2
+        right_bottom_y = right_bottom_y
+    elif ALIGN == 'right|bottom':
+        left_top_x = left_top_x + offset_x
+        left_top_y = left_top_y + offset_y
+        right_bottom_x = right_bottom_x
+        right_bottom_y = right_bottom_y
+    else : # 其他情况一并按照中心缩放处理
+        left_top_x = left_top_x + offset_x / 2
+        left_top_y = left_top_y + offset_y / 2
+        right_bottom_x = right_bottom_x - offset_x / 2
+        right_bottom_y = right_bottom_y - offset_y / 2
+    return int(left_top_x), int(left_top_y), int(right_bottom_x), int(right_bottom_y)
 
 
-# 按百分比缩小不规则四边形约束空间，  看起来简单，其实计算较为复杂
-def shrink_quadrilateral(LT_x, LT_y, RT_x, RT_y, RB_x, RB_y, LB_x, LB_y, SPACE_PERCENT):
+# 按百分比、对齐方式，缩小不规则四边形约束空间，  看起来简单，其实计算较为复杂
+def shrink_quadrilateral(LT_x, LT_y, RT_x, RT_y, RB_x, RB_y, LB_x, LB_y, constraint):
+    # 计算布局文件中的缩放比例
+    SPACE_PERCENT = float(constraint.precent) / 100
     # 先计算不规则四边形外接长方形的范围
     min_x = min(LT_x, RT_x, RB_x, LB_x)
     max_x = max(LT_x, RT_x, RB_x, LB_x)
