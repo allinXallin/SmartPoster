@@ -1046,7 +1046,7 @@
 			<font_size_min>2</font_size_min>
 			<font_size_max>160</font_size_max>
 			<align>center</align>
-			<precent>70</precent>
+			<precent>95</precent>
 		</title>
 		<sub_title space="s001">
 			<point_lefttop>3|28</point_lefttop>
@@ -1054,7 +1054,7 @@
 			<font_size_min>2</font_size_min>
 			<font_size_max>50</font_size_max>
 			<align>center</align>
-			<precent>80</precent>
+			<precent>95</precent>
 		</sub_title>
 		<content space="c001">
 			<point_lefttop>12|88</point_lefttop>
@@ -1062,13 +1062,13 @@
 			<font_size_min>2</font_size_min>
 			<font_size_max>30</font_size_max>
 			<align>center</align>
-			<precent>80</precent>
+			<precent>95</precent>
 		</content>
 		<logo space="l001">
 			<point_lefttop>10.7|4</point_lefttop>
 			<point_rightbottom>89.3|10</point_rightbottom>
 			<align>center</align>
-			<precent>90</precent>
+			<precent>95</precent>
 		</logo>
 		<photo space="p002">
 			<point_lefttop>20|48</point_lefttop>
@@ -1093,7 +1093,7 @@
 			<font_size_min>2</font_size_min>
 			<font_size_max>160</font_size_max>
 			<align>right</align>
-			<precent>70</precent>
+			<precent>95</precent>
 		</title>
 		<sub_title space="s001">
 			<point_lefttop>4.8|75</point_lefttop>
@@ -1101,7 +1101,7 @@
 			<font_size_min>2</font_size_min>
 			<font_size_max>50</font_size_max>
 			<align>right</align>
-			<precent>80</precent>
+			<precent>95</precent>
 		</sub_title>
 		<content space="c001">
 			<point_lefttop>4.8|87</point_lefttop>
@@ -1109,13 +1109,13 @@
 			<font_size_min>2</font_size_min>
 			<font_size_max>30</font_size_max>
 			<align>right</align>
-			<precent>80</precent>
+			<precent>95</precent>
 		</content>
 		<logo space="l001">
 			<point_lefttop>4.8|4</point_lefttop>
 			<point_rightbottom>95.2|12</point_rightbottom>
 			<align>left</align>
-			<precent>80</precent>
+			<precent>95</precent>
 		</logo>
 		<photo space="p002">
 			<point_lefttop>4.8|17</point_lefttop>
@@ -1138,7 +1138,7 @@
 			<font_size_min>2</font_size_min>
 			<font_size_max>100</font_size_max>
 			<align>center</align>
-			<precent>80</precent>
+			<precent>95</precent>
 		</title>
 		<sub_title space="s001">
 			<point_lefttop>82.1|25</point_lefttop>
@@ -1146,7 +1146,7 @@
 			<font_size_min>2</font_size_min>
 			<font_size_max>50</font_size_max>
 			<align>center</align>
-			<precent>80</precent>
+			<precent>95</precent>
 		</sub_title>
 		<content space="c001">
 			<point_lefttop>89.6|25</point_lefttop>
@@ -1154,7 +1154,7 @@
 			<font_size_min>2</font_size_min>
 			<font_size_max>30</font_size_max>
 			<align>left</align>
-			<precent>80</precent>
+			<precent>95</precent>
 		</content>
 		<logo space="l001">
 			<point_lefttop>10.7|3</point_lefttop>
@@ -1183,7 +1183,7 @@
 			<font_size_min>2</font_size_min>
 			<font_size_max>160</font_size_max>
 			<align>left</align>
-			<precent>80</precent>
+			<precent>95</precent>
 		</title>
 		<sub_title space="s001">
 			<point_lefttop>23|11</point_lefttop>
@@ -1191,7 +1191,7 @@
 			<font_size_min>2</font_size_min>
 			<font_size_max>40</font_size_max>
 			<align>left</align>
-			<precent>80</precent>
+			<precent>95</precent>
 		</sub_title>
 		<!-- 有的模板暂时不含content信息 -->
 		<content space="c001">
@@ -1200,13 +1200,13 @@
 			<font_size_min>2</font_size_min>
 			<font_size_max>20</font_size_max>
 			<align>left</align>
-			<precent>80</precent>
+			<precent>95</precent>
 		</content>
 		<logo space="l001">
 			<point_lefttop>32|3</point_lefttop>
 			<point_rightbottom>68|9</point_rightbottom>
 			<align>center</align>
-			<precent>80</precent>
+			<precent>95</precent>
 		</logo>
 		<photo space="p002">
 			<point_lefttop>23|43.2</point_lefttop>

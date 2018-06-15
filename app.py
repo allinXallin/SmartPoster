@@ -346,88 +346,88 @@ def produce_posters(json_data):
 
 
 
-
-#===========================本地测试版=========================
-# 制作好海报后，以POST方式发送数据回后端
-def send_posters_info(posters_result):
-    URL = 'http://172.16.0.200/api/v1/psdinfo'  # web后端地址
-    # 待返回给后端的信息，post给后端
-    post_data = {}
-    post_data['task_id'] = posters_result['taskid']
-    post_data['AlgorithmUpgrade'] = 1
-    posters_result.pop('taskid')
-    k = 1 # 海报计数器
-    pre_imgurl = "http://172.16.0.50:5050/image/?imgurl="
-    #先移除posters_result字典中taskid，其余则是海报相关的信息
-    files={}
-    for key,value in posters_result.items():
-        post_data['preview_url_' + str(k)] = pre_imgurl + value['name']
-        files['psdinfo_' + str(k)] = open(key, 'rb')
-        k=k+1
-    print(post_data)
-    #以post方式发送给web后端
-    try:
-        #post_data = json.dumps(post_data)
-        response = requests.post(URL,post_data,files=files)
-        #response = json.loads(response)
-        print(response.text)
-    except Exception as e:
-        # 若海报信息post传递失败，则将海报放到制作好的海报队列中
-        #=======================================================
-        print(str(e))
-
-    # 使用requests发送POST请求。   一个http请求 = 请求行 + 请求报头 + 消息主体
-    # # 方式一：application/x-www-form-urlencoded      form表单形式提交数据（需构造一个字典）
-    # URL = 'http://120.78.10.209/api/v1/psdinfo'
-    # data = {'preimg_url_1':'http://172.16.0.70:5050/image/?imgurl=background/happy1.jpg','preimg_url_2':'http://172.16.0.70:5050/image/?imgurl=background/happy2.jpg'}
-    # req = requests.post(URL,data=data)
-    # print(req.json())
-
-    # # 方式二：application/json    以json串提交数据
-    # URL = 'http://120.78.10.209/api/v1/psdinfo'
-    # data = json.dumps({'key1':'value', 'key2':'value2'})
-    # req = requests.post(URL,data=data)
-    # print(req.text)
-
-    # # 方式三；multipart/form-data     用来上传文件
-    # URL = 'http://120.78.10.209/api/v1/psdinfo'
-    # file = {'file': open('outputPosters/1/1/p_1/p_1.txt', 'rb')}
-    # req = requests.post(URL,files=file)
-    # print(req.text)
-
-
-
-
-
-
-
-
-
 #
-# #======================服务器部署版============================
+# #===========================本地测试版=========================
 # # 制作好海报后，以POST方式发送数据回后端
 # def send_posters_info(posters_result):
-#     URL = 'http://wx.weicheche.cn/wxposters/api/v1/psdinfo'
+#     URL = 'http://172.16.0.200/api/v1/psdinfo'  # web后端地址
+#     # 待返回给后端的信息，post给后端
 #     post_data = {}
 #     post_data['task_id'] = posters_result['taskid']
 #     post_data['AlgorithmUpgrade'] = 1
 #     posters_result.pop('taskid')
-#     k = 1
-#     pre_imgurl = "http://120.78.10.209:5050/image/?imgurl="
+#     k = 1 # 海报计数器
+#     pre_imgurl = "http://172.16.0.50:5050/image/?imgurl="
+#     #先移除posters_result字典中taskid，其余则是海报相关的信息
 #     files={}
 #     for key,value in posters_result.items():
 #         post_data['preview_url_' + str(k)] = pre_imgurl + value['name']
-#
 #         files['psdinfo_' + str(k)] = open(key, 'rb')
-#         k = k+1
+#         k=k+1
 #     print(post_data)
+#     #以post方式发送给web后端
 #     try:
-#         response = requests.post(URL, post_data, files=files)
-#         # print(response.text)
+#         #post_data = json.dumps(post_data)
+#         response = requests.post(URL,post_data,files=files)
+#         #response = json.loads(response)
+#         print(response.text)
 #     except Exception as e:
+#         # 若海报信息post传递失败，则将海报放到制作好的海报队列中
+#         #=======================================================
 #         print(str(e))
 #
+#     # 使用requests发送POST请求。   一个http请求 = 请求行 + 请求报头 + 消息主体
+#     # # 方式一：application/x-www-form-urlencoded      form表单形式提交数据（需构造一个字典）
+#     # URL = 'http://120.78.10.209/api/v1/psdinfo'
+#     # data = {'preimg_url_1':'http://172.16.0.70:5050/image/?imgurl=background/happy1.jpg','preimg_url_2':'http://172.16.0.70:5050/image/?imgurl=background/happy2.jpg'}
+#     # req = requests.post(URL,data=data)
+#     # print(req.json())
 #
+#     # # 方式二：application/json    以json串提交数据
+#     # URL = 'http://120.78.10.209/api/v1/psdinfo'
+#     # data = json.dumps({'key1':'value', 'key2':'value2'})
+#     # req = requests.post(URL,data=data)
+#     # print(req.text)
+#
+#     # # 方式三；multipart/form-data     用来上传文件
+#     # URL = 'http://120.78.10.209/api/v1/psdinfo'
+#     # file = {'file': open('outputPosters/1/1/p_1/p_1.txt', 'rb')}
+#     # req = requests.post(URL,files=file)
+#     # print(req.text)
+#
+#
+
+
+
+
+
+
+
+
+#======================服务器部署版============================
+# 制作好海报后，以POST方式发送数据回后端
+def send_posters_info(posters_result):
+    URL = 'http://wx.weicheche.cn/wxposters/api/v1/psdinfo'
+    post_data = {}
+    post_data['task_id'] = posters_result['taskid']
+    post_data['AlgorithmUpgrade'] = 1
+    posters_result.pop('taskid')
+    k = 1
+    pre_imgurl = "http://120.78.10.209:5050/image/?imgurl="
+    files={}
+    for key,value in posters_result.items():
+        post_data['preview_url_' + str(k)] = pre_imgurl + value['name']
+
+        files['psdinfo_' + str(k)] = open(key, 'rb')
+        k = k+1
+    print(post_data)
+    try:
+        response = requests.post(URL, post_data, files=files)
+        # print(response.text)
+    except Exception as e:
+        print(str(e))
+
+
 
 
 
