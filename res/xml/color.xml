@@ -141,4 +141,39 @@
     </color_group>
 
 
+
+
+
+    <!-- 端午节色彩组 -->
+    <color_group id="DWJ001">
+        <master>#EAFFD9</master>
+        <secondary>#142300</secondary>
+        <intersperse>#002962</intersperse>
+    </color_group>
+
+    <color_group id="DWJ002">
+        <master>#0AA0C8</master>
+        <secondary>#FFFDE6</secondary>
+        <intersperse>#FFFFFF</intersperse>
+    </color_group>
+
+    <color_group id="DWJ003">
+        <master>#ECECEC</master>
+        <secondary>#2C6504</secondary>
+        <intersperse>#232323</intersperse>
+    </color_group>
+
+    <color_group id="DWJ004">
+        <master>#FAFAE6</master>
+        <secondary>#829B14</secondary>
+        <intersperse>#C1C1C1</intersperse>
+    </color_group>
+
+    <color_group id="DWJ005">
+        <master>#FAEBC8</master>
+        <secondary>#781E05</secondary>
+        <intersperse>#EB5028</intersperse>
+    </color_group>
+
+
 </CATALOG>
