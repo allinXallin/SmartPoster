@@ -54,4 +54,13 @@
         <font_family>pf-zct.ttf|STZHONGS.TTF</font_family>
     </style>
 
+
+    <style name='父亲节' id='s08'>
+        <name>FuQinJie</name>
+        <layout_IDs>t00801|t00802|t00803|t00804</layout_IDs>
+        <color_group_IDs>B001|B002|B003|B004|B005</color_group_IDs>
+        <font_family>mmjlx.TTF|pf-zct.ttf</font_family>
+    </style>
+
+
 </CATALOG>

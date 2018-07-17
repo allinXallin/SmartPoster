@@ -2,6 +2,8 @@
 # coding=utf-8
 
 
+#夏佳伟
+
 import os,random,math,json,requests,time,cv2
 import xml.etree.ElementTree as ET
 import numpy as np
@@ -345,87 +347,87 @@ def produce_posters(json_data):
 
 
 
-
-
-#===========================本地测试版=========================
-# 制作好海报后，以POST方式发送数据回后端
-def send_posters_info(posters_result):
-    URL = 'http://172.16.0.200/api/v1/psdinfo'  # web后端地址
-    # 待返回给后端的信息，post给后端
-    post_data = {}
-    post_data['task_id'] = posters_result['taskid']
-    post_data['AlgorithmUpgrade'] = 1
-    posters_result.pop('taskid')
-    k = 1 # 海报计数器
-    pre_imgurl = "http://172.16.0.50:5050/image/?imgurl="
-    #先移除posters_result字典中taskid，其余则是海报相关的信息
-    files={}
-    for key,value in posters_result.items():
-        post_data['preview_url_' + str(k)] = pre_imgurl + value['name']
-        files['psdinfo_' + str(k)] = open(key, 'rb')
-        k=k+1
-    print(post_data)
-    #以post方式发送给web后端
-    try:
-        #post_data = json.dumps(post_data)
-        response = requests.post(URL,post_data,files=files)
-        #response = json.loads(response)
-        print(response.text)
-    except Exception as e:
-        # 若海报信息post传递失败，则将海报放到制作好的海报队列中
-        #=======================================================
-        print(str(e))
-
-    # 使用requests发送POST请求。   一个http请求 = 请求行 + 请求报头 + 消息主体
-    # # 方式一：application/x-www-form-urlencoded      form表单形式提交数据（需构造一个字典）
-    # URL = 'http://120.78.10.209/api/v1/psdinfo'
-    # data = {'preimg_url_1':'http://172.16.0.70:5050/image/?imgurl=background/happy1.jpg','preimg_url_2':'http://172.16.0.70:5050/image/?imgurl=background/happy2.jpg'}
-    # req = requests.post(URL,data=data)
-    # print(req.json())
-
-    # # 方式二：application/json    以json串提交数据
-    # URL = 'http://120.78.10.209/api/v1/psdinfo'
-    # data = json.dumps({'key1':'value', 'key2':'value2'})
-    # req = requests.post(URL,data=data)
-    # print(req.text)
-
-    # # 方式三；multipart/form-data     用来上传文件
-    # URL = 'http://120.78.10.209/api/v1/psdinfo'
-    # file = {'file': open('outputPosters/1/1/p_1/p_1.txt', 'rb')}
-    # req = requests.post(URL,files=file)
-    # print(req.text)
-
-
-
-
-
-
-
-
-
-
-# #======================服务器部署版============================
+#
+#
+# #===========================本地测试版=========================
 # # 制作好海报后，以POST方式发送数据回后端
 # def send_posters_info(posters_result):
-#     URL = 'http://wx.weicheche.cn/wxposters/api/v1/psdinfo'
+#     URL = 'http://172.16.0.200/api/v1/psdinfo'  # web后端地址
+#     # 待返回给后端的信息，post给后端
 #     post_data = {}
 #     post_data['task_id'] = posters_result['taskid']
 #     post_data['AlgorithmUpgrade'] = 1
 #     posters_result.pop('taskid')
-#     k = 1
-#     pre_imgurl = "http://120.78.10.209:5050/image/?imgurl="
+#     k = 1 # 海报计数器
+#     pre_imgurl = "http://172.16.0.50:5050/image/?imgurl="
+#     #先移除posters_result字典中taskid，其余则是海报相关的信息
 #     files={}
 #     for key,value in posters_result.items():
 #         post_data['preview_url_' + str(k)] = pre_imgurl + value['name']
-#
 #         files['psdinfo_' + str(k)] = open(key, 'rb')
-#         k = k+1
+#         k=k+1
 #     print(post_data)
+#     #以post方式发送给web后端
 #     try:
-#         response = requests.post(URL, post_data, files=files)
-#         # print(response.text)
+#         #post_data = json.dumps(post_data)
+#         response = requests.post(URL,post_data,files=files)
+#         #response = json.loads(response)
+#         print(response.text)
 #     except Exception as e:
+#         # 若海报信息post传递失败，则将海报放到制作好的海报队列中
+#         #=======================================================
 #         print(str(e))
+#
+#     # 使用requests发送POST请求。   一个http请求 = 请求行 + 请求报头 + 消息主体
+#     # # 方式一：application/x-www-form-urlencoded      form表单形式提交数据（需构造一个字典）
+#     # URL = 'http://120.78.10.209/api/v1/psdinfo'
+#     # data = {'preimg_url_1':'http://172.16.0.70:5050/image/?imgurl=background/happy1.jpg','preimg_url_2':'http://172.16.0.70:5050/image/?imgurl=background/happy2.jpg'}
+#     # req = requests.post(URL,data=data)
+#     # print(req.json())
+#
+#     # # 方式二：application/json    以json串提交数据
+#     # URL = 'http://120.78.10.209/api/v1/psdinfo'
+#     # data = json.dumps({'key1':'value', 'key2':'value2'})
+#     # req = requests.post(URL,data=data)
+#     # print(req.text)
+#
+#     # # 方式三；multipart/form-data     用来上传文件
+#     # URL = 'http://120.78.10.209/api/v1/psdinfo'
+#     # file = {'file': open('outputPosters/1/1/p_1/p_1.txt', 'rb')}
+#     # req = requests.post(URL,files=file)
+#     # print(req.text)
+#
+#
+
+
+
+
+
+
+
+
+#======================服务器部署版============================
+# 制作好海报后，以POST方式发送数据回后端
+def send_posters_info(posters_result):
+    URL = 'http://wx.weicheche.cn/wxposters/api/v1/psdinfo'
+    post_data = {}
+    post_data['task_id'] = posters_result['taskid']
+    post_data['AlgorithmUpgrade'] = 1
+    posters_result.pop('taskid')
+    k = 1
+    pre_imgurl = "http://120.78.10.209:5050/image/?imgurl="
+    files={}
+    for key,value in posters_result.items():
+        post_data['preview_url_' + str(k)] = pre_imgurl + value['name']
+
+        files['psdinfo_' + str(k)] = open(key, 'rb')
+        k = k+1
+    print(post_data)
+    try:
+        response = requests.post(URL, post_data, files=files)
+        # print(response.text)
+    except Exception as e:
+        print(str(e))
 
 
 
@@ -669,7 +671,6 @@ def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, pat
         #get_colors_by_id函数参数需要list类型
         color_list = []
         color_list.append(color)
-        print(color_list)
         style_color = get_colors_by_id(color_list)[0]
 
 
@@ -724,13 +725,16 @@ def draw_a_poster(userInfoDict, style_name, style_layout, style_color, font, pat
     #     json_layer['image'] = poster_path + '/bg.png'
 
 
+    print(mode)
     # 如果用户没上传photo，则采用设计者提供的美图（以风格为单位提供）
     # 绘制photo   注：若photo为空，则使用设计师默认提供的美图    注：参数shape表示photo容器的形状：Q-四边形 T-三角形 C-圆形
     if userInfoDict["photo"] is None:
         photos = os.listdir(f"res/photo_def/{style_name}/{style_layout.name}/")
         photo_url =f'res/photo_def/{style_name}/{style_layout.name}/{photos[random.randint(0, len(photos)-1)]}'
+        mode = False
     else:
         photo_url = userInfoDict["photo"]
+    print(mode)
     photo_png, psd_layers = draw_photo(img, psd_layers, photo_url, style_layout.photo, WIDTH, HEIGHT, mode)  # 第七个参数False：推荐的美图不允许裁剪
     photo_png.save(poster_path + '/photo.png')
     print(psd_layers)
